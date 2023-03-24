@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/tags")
+@RequestMapping("/tags")
 public class TagController {
     @GetMapping
     public String findTags() {
