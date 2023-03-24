@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'ru.clevertec.ecl'
+version = '1.0.0'
+sourceCompatibility = '17'
+
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework:spring-context:6.0.7'
+    implementation 'org.springframework:spring-web:6.0.7'
+    implementation 'org.springframework:spring-beans:6.0.7'
+    implementation 'org.springframework:spring-core:6.0.7'
+    implementation 'org.springframework:spring-webmvc:6.0.7'
+    implementation 'org.flywaydb:flyway-core:9.16.1'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    runtimeOnly 'com.h2database:h2:2.1.214'
+    runtimeOnly 'org.postgresql:postgresql:42.6.0'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    testImplementation 'org.springframework:spring-test:6.0.7'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
