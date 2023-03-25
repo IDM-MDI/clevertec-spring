@@ -8,16 +8,16 @@ CREATE TABLE gift_certificate (
                                   update_date TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
+CREATE TABLE tag (
+                     id SERIAL PRIMARY KEY,
+                     name VARCHAR(255) NOT NULL,
+                     status VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE gift_tag (
                           id SERIAL PRIMARY KEY,
                           giftID BIGINT NOT NULL,
                           tagID BIGINT NOT NULL,
                           CONSTRAINT gift_tag_giftID_fkey FOREIGN KEY (giftID) REFERENCES gift_certificate (id) ON DELETE CASCADE,
                           CONSTRAINT gift_tag_tagID_fkey FOREIGN KEY (tagID) REFERENCES tag (id) ON DELETE CASCADE
-);
-
-CREATE TABLE tag (
-                     id SERIAL PRIMARY KEY,
-                     name VARCHAR(255) NOT NULL,
-                     status VARCHAR(255) NOT NULL
 );
