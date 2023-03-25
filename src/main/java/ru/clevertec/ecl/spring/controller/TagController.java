@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/tags")
 public class TagController {
     @GetMapping
-    public String findTags() {
-        return "This method should return list of tags";
+    public List<TagDTO> findTags() {
+        return null;
     }
     @GetMapping("/{id}")
-    public String findTag(@PathVariable long id) {
-        return "This method should return tag by id";
+    public TagDTO findTag(@PathVariable long id) {
+        return null;
     }
     @PostMapping
-    public String saveTag(@RequestBody TagDTO tag) {
-        return "This method should save tag and return it";
+    public TagDTO saveTag(@RequestBody TagDTO tag) {
+        return null;
     }
     @PatchMapping("/{id}")
-    public String updateTag(@PathVariable long id,
+    public TagDTO updateTag(@PathVariable long id,
                             @RequestBody TagDTO tag) {
-        return "This method should update tag and return it";
+        return null;
+    }
+    @GetMapping("/search")
+    public List<TagDTO> findTags(TagDTO tag) {
+        return null;
     }
 }

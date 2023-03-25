@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/gifts")
 public class GiftCertificateController {
     @GetMapping
-    public String findGifts() {
-        return "This method should return list of gifts";
+    public List<GiftCertificateDTO> findGifts() {
+        return null;
     }
     @GetMapping("/{id}")
-    public String findGift(@PathVariable long id) {
-        return "This method should return gift by id";
+    public GiftCertificateDTO findGift(@PathVariable long id) {
+        return null;
     }
     @PostMapping
-    public String saveGift(@RequestBody GiftCertificateDTO gift) {
-        return "This method should save gift and return it";
+    public GiftCertificateDTO saveGift(@RequestBody GiftCertificateDTO gift) {
+        return null;
     }
     @PatchMapping("/{id}")
-    public String updateGift(@PathVariable long id,
+    public GiftCertificateDTO updateGift(@PathVariable long id,
                              @RequestBody GiftCertificateDTO gift) {
-        return "This method should update gift and return it";
+        return null;
+    }
+    @GetMapping("/search")
+    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
+        return null;
     }
 }
