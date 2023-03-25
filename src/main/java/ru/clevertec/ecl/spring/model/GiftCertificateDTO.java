@@ -1,16 +1,12 @@
-package ru.clevertec.ecl.spring.entity;
+package ru.clevertec.ecl.spring.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import ru.clevertec.ecl.spring.entity.Tag;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
-@Builder
-@AllArgsConstructor
-public class GiftCertificate {
+public class GiftCertificateDTO {
     private long id;
     private String name;
     private String description;
@@ -18,4 +14,5 @@ public class GiftCertificate {
     private long duration;
     private LocalDateTime create_date;
     private LocalDateTime update_date;
+    private List<Tag> tags;
 }
