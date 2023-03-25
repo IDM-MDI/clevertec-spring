@@ -10,5 +10,5 @@ import lombok.Data;
 public class GiftTag {
     private long id;
     private long giftID;
-    private String tagName;
+    private long tagID;
 }

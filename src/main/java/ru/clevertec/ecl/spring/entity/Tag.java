@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Tag {
+    private long id;
     private String name;
     private String status;
 }
