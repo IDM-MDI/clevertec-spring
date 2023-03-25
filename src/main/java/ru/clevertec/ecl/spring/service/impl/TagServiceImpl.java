@@ -12,12 +12,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
     @Override
-    public List<TagDTO> findAll(int page, int size, String filter, String direction) {
+    public List<TagDTO> findTags(int page, int size, String filter, String direction) {
         return null;
     }
 
     @Override
-    public TagDTO findByID(long id) {
+    public List<TagDTO> findTags(TagDTO tag) {
+        return null;
+    }
+
+    @Override
+    public TagDTO findTag(long id) {
         return null;
     }
 

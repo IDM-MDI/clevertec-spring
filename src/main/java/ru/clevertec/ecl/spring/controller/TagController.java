@@ -1,38 +1,48 @@
 package ru.clevertec.ecl.spring.controller;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.TagDTO;
+import ru.clevertec.ecl.spring.service.TagService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tags")
+@RequiredArgsConstructor
 public class TagController {
+    private final TagService service;
     @GetMapping
-    public List<TagDTO> findTags() {
-        return null;
+    public List<TagDTO> findTags(@RequestParam(defaultValue = "0") @Min(0) int page,
+                                 @RequestParam(defaultValue = "10") @Min(1) int size,
+                                 @RequestParam(defaultValue = "id") @NotBlank String filter,
+                                 @RequestParam(defaultValue = "asc") @NotBlank String direction) {
+        return service.findTags(page, size, filter, direction);
     }
     @GetMapping("/{id}")
     public TagDTO findTag(@PathVariable long id) {
-        return null;
+        return service.findTag(id);
     }
     @PostMapping
     public TagDTO saveTag(@RequestBody TagDTO tag) {
-        return null;
+        return service.save(tag);
     }
     @PatchMapping("/{id}")
     public TagDTO updateTag(@PathVariable long id,
                             @RequestBody TagDTO tag) {
-        return null;
+        return service.update(tag, id);
     }
     @GetMapping("/search")
     public List<TagDTO> findTags(TagDTO tag) {
-        return null;
+        return service.findTags(tag);
     }
 }

@@ -5,8 +5,9 @@ import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import java.util.List;
 
 public interface GiftCertificateService {
-    List<GiftCertificateDTO> findAll(int page, int size, String filter, String direction);
-    GiftCertificateDTO findByID(long id);
-    GiftCertificateDTO save(GiftCertificateDTO tag);
-    GiftCertificateDTO update(GiftCertificateDTO tag,long id);
+    List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction);
+    List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag);
+    GiftCertificateDTO findGift(long id);
+    GiftCertificateDTO save(GiftCertificateDTO gift);
+    GiftCertificateDTO update(GiftCertificateDTO gift,long id);
 }

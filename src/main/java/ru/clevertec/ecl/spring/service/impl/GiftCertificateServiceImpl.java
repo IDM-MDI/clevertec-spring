@@ -10,13 +10,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+
     @Override
-    public List<GiftCertificateDTO> findAll(int page, int size, String filter, String direction) {
+    public List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction) {
         return null;
     }
 
     @Override
-    public GiftCertificateDTO findByID(long id) {
+    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
+        return null;
+    }
+
+    @Override
+    public GiftCertificateDTO findGift(long id) {
         return null;
     }
 

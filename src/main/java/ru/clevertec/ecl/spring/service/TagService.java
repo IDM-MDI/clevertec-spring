@@ -6,8 +6,9 @@ import ru.clevertec.ecl.spring.model.TagDTO;
 import java.util.List;
 
 public interface TagService {
-    List<TagDTO> findAll(int page, int size, String filter, String direction);
-    TagDTO findByID(long id);
+    List<TagDTO> findTags(int page, int size, String filter, String direction);
+    List<TagDTO> findTags(TagDTO tag);
+    TagDTO findTag(long id);
     TagDTO save(TagDTO tag);
     TagDTO update(TagDTO tag,long id);
     List<Tag> saveAll(List<TagDTO> tags);
