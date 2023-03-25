@@ -16,7 +16,7 @@ public class GiftCertificate {
     private String description;
     private BigDecimal price;
     private long duration;
-    private LocalDateTime create_date;
-    private LocalDateTime update_date;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
     private String status;
 }

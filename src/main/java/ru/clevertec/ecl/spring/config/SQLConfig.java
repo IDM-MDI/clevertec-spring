@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -48,5 +49,9 @@ public class SQLConfig {
     @Bean
     public JdbcTemplate jdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource().getConnection());
+    }
+    @Bean
+    public SimpleJdbcInsert jdbcInsert() {
+        return new SimpleJdbcInsert(dataSource());
     }
 }
