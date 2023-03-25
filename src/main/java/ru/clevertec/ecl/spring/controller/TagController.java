@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/api/v1/tags")
 public class TagController {
     @GetMapping
     public String findTags() {
