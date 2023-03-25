@@ -18,4 +18,5 @@ public class GiftCertificate {
     private long duration;
     private LocalDateTime create_date;
     private LocalDateTime update_date;
+    private String status;
 }

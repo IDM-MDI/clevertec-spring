@@ -5,7 +5,8 @@ CREATE TABLE gift_certificate (
                                   price NUMERIC(10, 2) NOT NULL,
                                   duration BIGINT NOT NULL,
                                   create_date TIMESTAMP WITH TIME ZONE NOT NULL,
-                                  update_date TIMESTAMP WITH TIME ZONE NOT NULL
+                                  update_date TIMESTAMP WITH TIME ZONE NOT NULL,
+                                  status VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE tag (
