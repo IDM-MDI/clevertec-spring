@@ -16,8 +16,8 @@ CREATE TABLE tag (
 
 CREATE TABLE gift_tag (
                           id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                          giftID BIGINT NOT NULL,
-                          tagID BIGINT NOT NULL,
-                          CONSTRAINT gift_tag_giftID_fkey FOREIGN KEY (giftID) REFERENCES gift_certificate (id) ON DELETE CASCADE,
-                          CONSTRAINT gift_tag_tagID_fkey FOREIGN KEY (tagID) REFERENCES tag (id) ON DELETE CASCADE
+                          gift_id BIGINT NOT NULL,
+                          tag_id BIGINT NOT NULL,
+                          CONSTRAINT gift_tag_giftID_fkey FOREIGN KEY (gift_id) REFERENCES gift_certificate (id) ON DELETE CASCADE,
+                          CONSTRAINT gift_tag_tagID_fkey FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
 );
