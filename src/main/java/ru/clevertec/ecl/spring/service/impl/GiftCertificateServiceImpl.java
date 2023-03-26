@@ -17,7 +17,6 @@ import ru.clevertec.ecl.spring.util.TagMapper;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +32,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificateDTO> gifts = repository.findGifts(page, size, filter, direction)
                 .stream()
                 .map(mapper::toModel)
-                .collect(Collectors.toList());
+                .toList();
         fillGiftsWithTag(gifts);
         return gifts;
     }
@@ -63,7 +62,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 tagService.saveAll(gift.getTags())
                         .stream()
                         .map(tagMapper::toModel)
-                        .collect(Collectors.toList())
+                        .toList()
         );
         saved.getTags().forEach(tag -> GiftTag.builder()
                         .giftID(saved.getId())
@@ -79,13 +78,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 tagService.saveAll(gift.getTags())
                         .stream()
                         .map(tagMapper::toModel)
-                        .collect(Collectors.toList())
+                        .toList()
         );
         updated.getTags().forEach(tag -> GiftTag.builder()
                 .giftID(updated.getId())
                 .tagID(tag.getId())
                 .build());
         return updated;
+    }
+
+    @Override
+    public void delete(long id) throws SQLException {
+        repository.delete(id);
     }
 
     private void fillGiftsWithTag(List<GiftCertificateDTO> gifts) throws SQLException {

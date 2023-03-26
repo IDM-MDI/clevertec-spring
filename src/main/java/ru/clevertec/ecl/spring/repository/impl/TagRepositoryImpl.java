@@ -106,12 +106,12 @@ public class TagRepositoryImpl implements TagRepository {
                     .append(tag.getId());
         }
         if(StringUtils.isNotBlank(tag.getName())) {
-            builder.append(" AND name = ")
-                    .append(String.format("'%s'", tag.getName()));
+            builder.append(" AND LOWER(name) LIKE ")
+                    .append(String.format("'%s'", "%" + tag.getName() + "%"));
         }
         if(StringUtils.isNotBlank(tag.getStatus())) {
-            builder.append(" AND status = ")
-                    .append(String.format("'%s'", tag.getStatus()));
+            builder.append(" AND LOWER(status) LIKE ")
+                    .append(String.format("'%s'", "%" + tag.getStatus() + "%"));
         }
         return builder.toString();
     }

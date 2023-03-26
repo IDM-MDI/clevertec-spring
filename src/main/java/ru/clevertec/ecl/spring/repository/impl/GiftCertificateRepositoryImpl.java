@@ -48,7 +48,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     "SET status = '%s' " +
                     "WHERE %s = ?";
     private static final String SEARCH_START = "SELECT * FROM gift_certificate WHERE 1=1";
-    private static final String IS_STRING = " = '%s'";
+    private static final String LIKE_STRING = " LIKE '%s'";
+    private static final String IS_STRING = "= '%s'";
     private final JdbcTemplate template;
     private final SimpleJdbcInsert jdbcInsert;
     private final GiftCertificateRowMapper rowMapper;
@@ -116,10 +117,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getId());
         }
         if(StringUtils.isNotBlank(certificate.getName())) {
-            builder.append(String.format(" AND name" + IS_STRING, certificate.getName()));
+            builder.append(String.format(" AND LOWER(name)" + LIKE_STRING, "%" + certificate.getName() + "%"));
         }
         if(StringUtils.isNotBlank(certificate.getDescription())) {
-            builder.append(String.format(" AND description" + IS_STRING, certificate.getDescription()));
+            builder.append(String.format(" AND LOWER(description)" + LIKE_STRING, "%"+ certificate.getDescription() + "%"));
         }
         if(Objects.nonNull(certificate.getPrice())) {
             builder.append(" AND price = ")
@@ -130,13 +131,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getDuration());
         }
         if(Objects.nonNull(certificate.getCreateDate())) {
-            builder.append(String.format(" AND create_date" + IS_STRING, certificate.getCreateDate()));
+            builder.append(String.format(" AND LOWER(create_date)" + LIKE_STRING, "%" + certificate.getCreateDate() + "%"));
         }
         if(Objects.nonNull(certificate.getUpdateDate())) {
-            builder.append(String.format(" AND update_date" + IS_STRING, certificate.getUpdateDate()));
+            builder.append(String.format(" AND LOWER(update_date)" + LIKE_STRING, "%"+ certificate.getUpdateDate() + "%"));
         }
         if(StringUtils.isNotBlank(certificate.getStatus())) {
-            builder.append(String.format(" AND status" + IS_STRING, certificate.getStatus()));
+            builder.append(String.format(" AND LOWER(status)" + LIKE_STRING, "%"+ certificate.getStatus() + "%"));
         }
         return builder.toString();
     }

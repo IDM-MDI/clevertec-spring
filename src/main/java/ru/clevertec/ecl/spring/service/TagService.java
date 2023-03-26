@@ -13,4 +13,6 @@ public interface TagService {
     TagDTO save(TagDTO tag) throws SQLException;
     TagDTO update(TagDTO tag,long id) throws SQLException;
     List<Tag> saveAll(List<TagDTO> tags) throws SQLException;
+
+    void delete(long id) throws SQLException;
 }

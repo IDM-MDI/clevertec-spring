@@ -11,7 +11,6 @@ import ru.clevertec.ecl.spring.util.TagMapper;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +57,11 @@ public class TagServiceImpl implements TagService {
         for (TagDTO tag : tags) {
             list.add(save(tag));
         }
-        return list.stream().map(mapper::toEntity).collect(Collectors.toList());
+        return list.stream().map(mapper::toEntity).toList();
+    }
+
+    @Override
+    public void delete(long id) throws SQLException {
+        repository.delete(id);
     }
 }

@@ -11,4 +11,6 @@ public interface GiftCertificateService {
     GiftCertificateDTO findGift(long id) throws SQLException;
     GiftCertificateDTO save(GiftCertificateDTO gift) throws SQLException;
     GiftCertificateDTO update(GiftCertificateDTO gift,long id) throws SQLException;
+
+    void delete(long id) throws SQLException;
 }

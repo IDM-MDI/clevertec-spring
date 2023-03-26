@@ -3,6 +3,8 @@ package ru.clevertec.ecl.spring.controller;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +43,11 @@ public class GiftCertificateController {
     public GiftCertificateDTO updateGift(@PathVariable long id,
                              @RequestBody GiftCertificateDTO gift) throws SQLException {
         return service.update(gift, id);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteGift(@PathVariable long id) throws SQLException {
+        service.delete(id);
+        return ResponseEntity.ok("Gift certificate successfully deleted");
     }
     @GetMapping("/search")
     public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) throws SQLException {
