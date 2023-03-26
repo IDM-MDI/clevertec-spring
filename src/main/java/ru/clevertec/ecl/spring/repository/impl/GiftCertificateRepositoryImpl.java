@@ -1,8 +1,8 @@
 package ru.clevertec.ecl.spring.repository.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -10,6 +10,7 @@ import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
+import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.repository.ColumnName.CREATE_DATE;
 import static ru.clevertec.ecl.spring.repository.ColumnName.DESCRIPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.DURATION;
@@ -29,40 +31,50 @@ import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.repository.ColumnName.UPDATE_DATE;
 
 @Repository
-@RequiredArgsConstructor
 public class GiftCertificateRepositoryImpl implements GiftCertificateRepository {
     private static final String FIND_BY_PAGE =
             "SELECT * FROM gift_certificate " +
                     "ORDER BY %s %s " +
-                    "OFFSET ? LIMIT ?";
+                    "LIMIT ? OFFSET ?";
     private static final String FIND_BY_COLUMN =
             "SELECT * FROM gift_certificate " +
                     "WHERE %s = ?";
     private static final String UPDATE =
             "UPDATE gift_certificate " +
-                    "SET " +
-                    "WHERE id = ? ";
+                    "SET ";
+    private static final String WHERE_ID = " WHERE id = ?";
     private static final String SET_STATUS =
             "UPDATE gift_certificate " +
-                    "SET status = %s " +
+                    "SET status = '%s' " +
                     "WHERE %s = ?";
     private static final String SEARCH_START = "SELECT * FROM gift_certificate WHERE 1=1";
+    private static final String IS_STRING = " = '%s'";
     private final JdbcTemplate template;
     private final SimpleJdbcInsert jdbcInsert;
     private final GiftCertificateRowMapper rowMapper;
+
+    @Autowired
+    public GiftCertificateRepositoryImpl(JdbcTemplate template, GiftCertificateRowMapper rowMapper, DataSource source) {
+        this.template = template;
+        this.rowMapper = rowMapper;
+        jdbcInsert = new SimpleJdbcInsert(source)
+                .withTableName("gift_certificate")
+                .usingGeneratedKeyColumns(ID);
+    }
+
     @Override
     public List<GiftCertificate> findGifts(int page, int size, String filter, String direction) throws SQLException {
-        return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, page, size);
+        return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
     }
 
     @Override
     public List<GiftCertificate> findGifts(GiftCertificate certificate) throws SQLException {
-        return template.query(createSearchQuery(certificate),rowMapper);
+        return template.query(createSearchQuery(certificate), rowMapper);
     }
 
     @Override
     public Optional<GiftCertificate> findGift(long id) throws SQLException {
-        return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, id)
+        return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
                 .stream()
                 .findFirst();
     }
@@ -76,14 +88,14 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate update(GiftCertificate certificate, long id) throws SQLException {
-        template.update(createUpdateQuery(certificate),id);
+        template.update(createUpdateQuery(certificate),String.valueOf(id));
         return findGift(id)
                 .orElseThrow();
     }
 
     @Override
     public void delete(long id) throws SQLException {
-        template.execute(String.format(SET_STATUS, ACTIVE, ID), id);
+        template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
     }
 
     private Map<String, Object> createInsertMap(GiftCertificate certificate) {
@@ -104,12 +116,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getId());
         }
         if(StringUtils.isNotBlank(certificate.getName())) {
-            builder.append(" AND name = ")
-                    .append(certificate.getName());
+            builder.append(String.format(" AND name" + IS_STRING, certificate.getName()));
         }
         if(StringUtils.isNotBlank(certificate.getDescription())) {
-            builder.append(" AND description = ")
-                    .append(certificate.getDescription());
+            builder.append(String.format(" AND description" + IS_STRING, certificate.getDescription()));
         }
         if(Objects.nonNull(certificate.getPrice())) {
             builder.append(" AND price = ")
@@ -120,16 +130,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getDuration());
         }
         if(Objects.nonNull(certificate.getCreateDate())) {
-            builder.append(" AND create_date = ")
-                    .append(certificate.getCreateDate().toString());
+            builder.append(String.format(" AND create_date" + IS_STRING, certificate.getCreateDate()));
         }
         if(Objects.nonNull(certificate.getUpdateDate())) {
-            builder.append(" AND update_date = ")
-                    .append(certificate.getUpdateDate().toString());
+            builder.append(String.format(" AND update_date" + IS_STRING, certificate.getUpdateDate()));
         }
-        if(StringUtils.isNotBlank(certificate.getName())) {
-            builder.append(" AND status = ")
-                    .append(certificate.getStatus());
+        if(StringUtils.isNotBlank(certificate.getStatus())) {
+            builder.append(String.format(" AND status" + IS_STRING, certificate.getStatus()));
         }
         return builder.toString();
     }
@@ -137,14 +144,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         StringBuilder builder = new StringBuilder(UPDATE);
         if(StringUtils.isNotBlank(certificate.getName())) {
             builder.append(NAME)
-                    .append(" = ")
-                    .append(certificate.getName())
+                    .append(String.format(IS_STRING, certificate.getName()))
                     .append(",");
         }
         if(StringUtils.isNotBlank(certificate.getDescription())) {
             builder.append(DESCRIPTION)
-                    .append(" = ")
-                    .append(certificate.getDescription())
+                    .append(String.format(IS_STRING, certificate.getDescription()))
                     .append(",");
         }
         if(certificate.getDuration() > 0) {
@@ -156,13 +161,12 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         if(Objects.nonNull(certificate.getPrice())) {
             builder.append(PRICE)
                     .append(" = ")
-                    .append(certificate.getPrice());
+                    .append(certificate.getPrice())
+                    .append(",");
         }
-        if(Objects.nonNull(certificate.getUpdateDate())) {
-            builder.append(UPDATE_DATE)
-                    .append(" = ")
-                    .append(certificate.getUpdateDate());
-        }
-        return builder.toString();
+        return builder.append(UPDATE_DATE)
+                .append(String.format(IS_STRING, LocalDateTime.now()))
+                .append(WHERE_ID)
+                .toString();
     }
 }
