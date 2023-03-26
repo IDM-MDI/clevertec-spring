@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -28,29 +27,29 @@ public class GiftCertificateController {
     public List<GiftCertificateDTO> findGifts(@RequestParam(defaultValue = "0") @Min(0) int page,
                                               @RequestParam(defaultValue = "10") @Min(1) int size,
                                               @RequestParam(defaultValue = "id") @NotBlank String filter,
-                                              @RequestParam(defaultValue = "asc") @NotBlank String direction) throws SQLException {
+                                              @RequestParam(defaultValue = "asc") @NotBlank String direction) {
         return service.findGifts(page, size, filter, direction);
     }
     @GetMapping("/{id}")
-    public GiftCertificateDTO findGift(@PathVariable long id) throws SQLException {
+    public GiftCertificateDTO findGift(@PathVariable long id) {
         return service.findGift(id);
     }
     @PostMapping
-    public GiftCertificateDTO saveGift(@RequestBody GiftCertificateDTO gift) throws SQLException {
+    public GiftCertificateDTO saveGift(@RequestBody GiftCertificateDTO gift) {
         return service.save(gift);
     }
     @PatchMapping("/{id}")
     public GiftCertificateDTO updateGift(@PathVariable long id,
-                             @RequestBody GiftCertificateDTO gift) throws SQLException {
+                             @RequestBody GiftCertificateDTO gift) {
         return service.update(gift, id);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGift(@PathVariable long id) throws SQLException {
+    public ResponseEntity<String> deleteGift(@PathVariable long id) {
         service.delete(id);
         return ResponseEntity.ok("Gift certificate successfully deleted");
     }
     @GetMapping("/search")
-    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) throws SQLException {
+    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
         return service.findGifts(gift, tag);
     }
 }

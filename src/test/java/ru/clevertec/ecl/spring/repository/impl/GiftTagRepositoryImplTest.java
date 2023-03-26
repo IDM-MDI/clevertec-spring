@@ -40,7 +40,7 @@ class GiftTagRepositoryImplTest {
     @Nested
     class Save {
         @Test
-        void saveAllShouldSaveListOfRelation() throws SQLException {
+        void saveAllShouldSaveListOfRelation() {
             List<GiftTag> relations = List.of(
                     GiftTag.builder()
                             .giftID(1)
@@ -59,7 +59,7 @@ class GiftTagRepositoryImplTest {
                     .isNotEmpty();
         }
         @Test
-        void saveShouldSaveRelation() throws SQLException {
+        void saveShouldSaveRelation() {
             GiftTag relation = GiftTag.builder()
                     .giftID(1)
                     .tagID(5)
@@ -84,27 +84,27 @@ class GiftTagRepositoryImplTest {
     @Nested
     class FindBy {
         @Test
-        void findByTagShouldNotEmptyList() throws SQLException {
+        void findByTagShouldNotEmptyList() {
             List<GiftTag> result = repository.findByTag(1);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
 
         @Test
-        void findByTagShouldEmptyList() throws SQLException {
+        void findByTagShouldEmptyList() {
             List<GiftTag> result = repository.findByTag(100);
             Assertions.assertThat(result)
                     .isEmpty();
         }
         @Test
-        void findByGiftShouldNotEmptyList() throws SQLException {
+        void findByGiftShouldNotEmptyList() {
             List<GiftTag> result = repository.findByGift(1);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
 
         @Test
-        void findByGiftShouldEmpty() throws SQLException {
+        void findByGiftShouldEmpty() {
             List<GiftTag> result = repository.findByGift(100);
             Assertions.assertThat(result)
                     .isEmpty();

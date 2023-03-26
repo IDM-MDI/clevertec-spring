@@ -7,11 +7,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.Tag;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
 import java.sql.SQLException;
@@ -46,13 +46,13 @@ class TagRepositoryImplTest {
     @Nested
     class FindByPage {
         @Test
-        void findTagsByPageShouldReturnCorrectList() throws SQLException {
+        void findTagsByPageShouldReturnCorrectList() {
             List<Tag> result = repository.findTags(PAGE, SIZE, FILTER, DIRECTION);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
-        void findTagsByPageShouldReturnEmptyList() throws SQLException {
+        void findTagsByPageShouldReturnEmptyList() {
             List<Tag> result = repository.findTags(PAGE + 100, SIZE, FILTER, DIRECTION);
             Assertions.assertThat(result)
                     .isEmpty();
@@ -61,7 +61,7 @@ class TagRepositoryImplTest {
     @Nested
     class FindByTag {
         @Test
-        void findTagsByTagShouldReturnCorrectList() throws SQLException {
+        void findTagsByTagShouldReturnCorrectList() {
             Tag tag = Tag.builder()
                     .name("Entertainment")
                     .build();
@@ -70,7 +70,7 @@ class TagRepositoryImplTest {
                     .isNotEmpty();
         }
         @Test
-        void findTagsByTagShouldReturnEmptyList() throws SQLException {
+        void findTagsByTagShouldReturnEmptyList() {
             Tag tag = Tag.builder()
                     .id(100L)
                     .build();
@@ -82,13 +82,13 @@ class TagRepositoryImplTest {
     @Nested
     class FindByID {
         @Test
-        void findTagByIDShouldReturnPresentValue() throws SQLException {
+        void findTagByIDShouldReturnPresentValue() {
             Optional<Tag> result = repository.findTag(1L);
             Assertions.assertThat(result)
                     .isPresent();
         }
         @Test
-        void findTagByIDShouldReturnEmptyValue() throws SQLException {
+        void findTagByIDShouldReturnEmptyValue() {
             Optional<Tag> result = repository.findTag(0L);
             Assertions.assertThat(result)
                     .isNotPresent();
@@ -99,7 +99,7 @@ class TagRepositoryImplTest {
     @Nested
     class Save {
         @Test
-        void saveShouldReturnSavedTag() throws SQLException {
+        void saveShouldReturnSavedTag() {
             String exceptionName = "Test tag";
             Tag result = repository.save(
                     Tag.builder()
@@ -110,16 +110,16 @@ class TagRepositoryImplTest {
                     .isEqualTo(exceptionName);
         }
         @Test
-        void saveShouldThrowSQLException() throws SQLException {
+        void saveShouldThrowSQLException() {
             Assertions.assertThatThrownBy(() -> repository.save(Tag.builder().build()))
-                    .isInstanceOf(DataIntegrityViolationException.class);
+                    .isInstanceOf(RepositoryException.class);
         }
     }
 
     @Nested
     class Update {
         @Test
-        void updateShouldReturnUpdatedTag() throws SQLException {
+        void updateShouldReturnUpdatedTag() {
             Tag expected = Tag.builder()
                     .id(1L)
                     .name("test")
@@ -133,7 +133,7 @@ class TagRepositoryImplTest {
     @Nested
     class Delete {
         @Test
-        void deleteShouldChangeStatusToDelete() throws SQLException {
+        void deleteShouldChangeStatusToDelete() {
             repository.delete(1L);
             Tag result = repository.findTag(1L)
                     .get();

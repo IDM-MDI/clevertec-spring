@@ -3,6 +3,7 @@ package ru.clevertec.ecl.spring.repository.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,10 @@ import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EXCEPTION;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
 import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
@@ -57,39 +61,77 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> findTags(int page, int size, String filter, String direction) throws SQLException {
-        return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
+    public List<Tag> findTags(int page, int size, String filter, String direction) {
+        try {
+            return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public List<Tag> findTags(Tag tag) throws SQLException {
-        return template.query(createSearchQuery(tag),rowMapper);
+    public List<Tag> findTags(Tag tag) {
+        try {
+            return template.query(createSearchQuery(tag),rowMapper);
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public Optional<Tag> findTag(long id) throws SQLException {
-        return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
-                .stream()
-                .findFirst();
+    public Optional<Tag> findTag(long id) {
+        try {
+            return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
+                    .stream()
+                    .findFirst();
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public Tag save(Tag tag) throws SQLException {
-        Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(tag)));
-        return findTag(number.longValue())
-                .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
+    public Tag save(Tag tag) {
+        try {
+            Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(tag)));
+            return findTag(number.longValue())
+                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public Tag update(Tag tag, long id) throws SQLException {
-        template.update(UPDATE, tag.getName(), String.valueOf(id));
-        return findTag(id)
-                .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
+    public Tag update(Tag tag, long id) {
+        try {
+            template.update(UPDATE, tag.getName(), String.valueOf(id));
+            return findTag(id)
+                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public void delete(long id) throws SQLException {
-        template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
+    public void delete(long id) {
+        try {
+            template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     private Map<String, Object> createInsertMap(Tag tag) {
@@ -107,11 +149,11 @@ public class TagRepositoryImpl implements TagRepository {
         }
         if(StringUtils.isNotBlank(tag.getName())) {
             builder.append(" AND LOWER(name) LIKE ")
-                    .append(String.format("'%s'", "%" + tag.getName() + "%"));
+                    .append(String.format("'%s'", "%" + tag.getName().toLowerCase() + "%"));
         }
         if(StringUtils.isNotBlank(tag.getStatus())) {
             builder.append(" AND LOWER(status) LIKE ")
-                    .append(String.format("'%s'", "%" + tag.getStatus() + "%"));
+                    .append(String.format("'%s'", "%" + tag.getStatus().toLowerCase() + "%"));
         }
         return builder.toString();
     }

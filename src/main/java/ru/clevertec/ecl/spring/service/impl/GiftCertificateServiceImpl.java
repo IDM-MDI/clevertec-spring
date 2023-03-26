@@ -14,8 +14,6 @@ import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
 import ru.clevertec.ecl.spring.util.TagMapper;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,7 +26,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final TagMapper tagMapper;
 
     @Override
-    public List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction) throws SQLException {
+    public List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction) {
         List<GiftCertificateDTO> gifts = repository.findGifts(page, size, filter, direction)
                 .stream()
                 .map(mapper::toModel)
@@ -38,16 +36,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) throws SQLException {
+    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
         List<GiftCertificate> byGift = repository.findGifts(mapper.toEntity(gift));
         if(StringUtils.isNotBlank(tag)) {
-            byGift = searchByTag(byGift);
+            byGift = searchByTag(byGift,tag);
         }
         return findByIDAll(byGift);
     }
 
     @Override
-    public GiftCertificateDTO findGift(long id) throws SQLException {
+    public GiftCertificateDTO findGift(long id) {
         GiftCertificateDTO gift = repository.findGift(id)
                 .map(mapper::toModel)
                 .orElseThrow();
@@ -56,7 +54,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificateDTO save(GiftCertificateDTO gift) throws SQLException {
+    public GiftCertificateDTO save(GiftCertificateDTO gift) {
         GiftCertificateDTO saved = mapper.toModel(repository.save(mapper.toEntity(gift)));
         saved.setTags(
                 tagService.saveAll(gift.getTags())
@@ -72,7 +70,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificateDTO update(GiftCertificateDTO gift, long id) throws SQLException {
+    public GiftCertificateDTO update(GiftCertificateDTO gift, long id) {
         GiftCertificateDTO updated = mapper.toModel(repository.update(mapper.toEntity(gift), id));
         updated.setTags(
                 tagService.saveAll(gift.getTags())
@@ -88,26 +86,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void delete(long id) throws SQLException {
+    public void delete(long id) {
         repository.delete(id);
     }
 
-    private void fillGiftsWithTag(List<GiftCertificateDTO> gifts) throws SQLException {
-        for (GiftCertificateDTO gift : gifts) {
-            gift.setTags(fillGiftWithTag(gift.getId()));
-        }
+    private void fillGiftsWithTag(List<GiftCertificateDTO> gifts) {
+        gifts.forEach(gift -> gift.setTags(fillGiftWithTag(gift.getId())));
     }
 
-    private List<GiftCertificateDTO> findByIDAll(List<GiftCertificate> byGift) throws SQLException {
-        List<GiftCertificateDTO> result = new ArrayList<>();
-        for (GiftCertificate giftCertificate : byGift) {
-            result.add(findGift(giftCertificate.getId()));
-        }
-        return result;
+    private List<GiftCertificateDTO> findByIDAll(List<GiftCertificate> byGift) {
+        return byGift.stream()
+                .map(giftCertificate -> findGift(giftCertificate.getId()))
+                .toList();
     }
-    private List<GiftCertificate> searchByTag(List<GiftCertificate> byGift) throws SQLException {
+    private List<GiftCertificate> searchByTag(List<GiftCertificate> byGift,String tag) {
         TagDTO tagDTO = tagService.findTags(
                         TagDTO.builder()
+                                .name(tag)
                                 .build()
                 ).stream()
                 .findFirst()
@@ -119,11 +114,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 )
                 .toList();
     }
-    private List<TagDTO> fillGiftWithTag(long giftID) throws SQLException {
-        List<TagDTO> list = new ArrayList<>();
-        for (GiftTag giftTag : giftTagService.findByGift(giftID)) {
-            list.add(tagService.findTag(giftTag.getTagID()));
-        }
-        return list;
+    private List<TagDTO> fillGiftWithTag(long giftID) {
+        return giftTagService.findByGift(giftID)
+                .stream()
+                .map(giftTag -> tagService.findTag(giftTag.getTagID()))
+                .toList();
     }
 }

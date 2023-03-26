@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftTag;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.GIFT_ID;
 import static ru.clevertec.ecl.spring.repository.ColumnName.TAG_ID;
 
@@ -47,13 +50,25 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
     }
 
     @Override
-    public List<GiftTag> findByTag(long id) throws SQLException {
-        return template.query(String.format(FIND_BY_COLUMN, TAG_ID), rowMapper, String.valueOf(id));
+    public List<GiftTag> findByTag(long id) {
+        try {
+            return template.query(String.format(FIND_BY_COLUMN, TAG_ID), rowMapper, String.valueOf(id));
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public List<GiftTag> findByGift(long id) throws SQLException {
-        return template.query(String.format(FIND_BY_COLUMN, GIFT_ID), rowMapper, String.valueOf(id));
+    public List<GiftTag> findByGift(long id) {
+        try {
+            return template.query(String.format(FIND_BY_COLUMN, GIFT_ID), rowMapper, String.valueOf(id));
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
     private Map<String, Object> createInsertMap(GiftTag relation) {
         Map<String, Object> parameters = new HashMap<>();

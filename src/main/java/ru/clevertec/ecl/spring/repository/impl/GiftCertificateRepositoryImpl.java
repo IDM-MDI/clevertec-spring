@@ -3,10 +3,12 @@ package ru.clevertec.ecl.spring.repository.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
@@ -21,6 +23,9 @@ import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EXCEPTION;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.CREATE_DATE;
 import static ru.clevertec.ecl.spring.repository.ColumnName.DESCRIPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.DURATION;
@@ -64,39 +69,79 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> findGifts(int page, int size, String filter, String direction) throws SQLException {
-        return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
+    public List<GiftCertificate> findGifts(int page, int size, String filter, String direction) {
+        try {
+            return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public List<GiftCertificate> findGifts(GiftCertificate certificate) throws SQLException {
-        return template.query(createSearchQuery(certificate), rowMapper);
+    public List<GiftCertificate> findGifts(GiftCertificate certificate) {
+        try {
+            return template.query(createSearchQuery(certificate), rowMapper);
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public Optional<GiftCertificate> findGift(long id) throws SQLException {
-        return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
-                .stream()
-                .findFirst();
+    public Optional<GiftCertificate> findGift(long id) {
+        try {
+            return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
+                    .stream()
+                    .findFirst();
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public GiftCertificate save(GiftCertificate certificate) throws SQLException {
-        Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(certificate)));
-        return findGift(number.longValue())
-                .orElseThrow();
+    public GiftCertificate save(GiftCertificate certificate)  {
+        try {
+            Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(certificate)));
+            return findGift(number.longValue())
+                    .orElseThrow();
+
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public GiftCertificate update(GiftCertificate certificate, long id) throws SQLException {
-        template.update(createUpdateQuery(certificate),String.valueOf(id));
-        return findGift(id)
-                .orElseThrow();
+    public GiftCertificate update(GiftCertificate certificate, long id) {
+        try {
+            template.update(createUpdateQuery(certificate),String.valueOf(id));
+            return findGift(id)
+                    .orElseThrow();
+
+        } catch (DataIntegrityViolationException e) {
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     @Override
-    public void delete(long id) throws SQLException {
-        template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
+    public void delete(long id) {
+        try {
+            template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
+        } catch (SQLException e) {
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+        } catch (Exception e) {
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+        }
     }
 
     private Map<String, Object> createInsertMap(GiftCertificate certificate) {
@@ -117,10 +162,10 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getId());
         }
         if(StringUtils.isNotBlank(certificate.getName())) {
-            builder.append(String.format(" AND LOWER(name)" + LIKE_STRING, "%" + certificate.getName() + "%"));
+            builder.append(String.format(" AND LOWER(name)" + LIKE_STRING, "%" + certificate.getName().toLowerCase() + "%"));
         }
         if(StringUtils.isNotBlank(certificate.getDescription())) {
-            builder.append(String.format(" AND LOWER(description)" + LIKE_STRING, "%"+ certificate.getDescription() + "%"));
+            builder.append(String.format(" AND LOWER(description)" + LIKE_STRING, "%"+ certificate.getDescription().toLowerCase() + "%"));
         }
         if(Objects.nonNull(certificate.getPrice())) {
             builder.append(" AND price = ")
@@ -131,13 +176,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
                     .append(certificate.getDuration());
         }
         if(Objects.nonNull(certificate.getCreateDate())) {
-            builder.append(String.format(" AND LOWER(create_date)" + LIKE_STRING, "%" + certificate.getCreateDate() + "%"));
+            builder.append(String.format(" AND LOWER(create_date)" + LIKE_STRING, "%" + certificate.getCreateDate().toString().toLowerCase() + "%"));
         }
         if(Objects.nonNull(certificate.getUpdateDate())) {
-            builder.append(String.format(" AND LOWER(update_date)" + LIKE_STRING, "%"+ certificate.getUpdateDate() + "%"));
+            builder.append(String.format(" AND LOWER(update_date)" + LIKE_STRING, "%"+ certificate.getUpdateDate().toString().toLowerCase() + "%"));
         }
         if(StringUtils.isNotBlank(certificate.getStatus())) {
-            builder.append(String.format(" AND LOWER(status)" + LIKE_STRING, "%"+ certificate.getStatus() + "%"));
+            builder.append(String.format(" AND LOWER(status)" + LIKE_STRING, "%"+ certificate.getStatus().toLowerCase() + "%"));
         }
         return builder.toString();
     }

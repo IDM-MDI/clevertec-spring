@@ -6,7 +6,6 @@ import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.service.GiftTagService;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -24,12 +23,12 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
-    public List<GiftTag> findByTag(long id) throws SQLException {
+    public List<GiftTag> findByTag(long id) {
         return repository.findByTag(id);
     }
 
     @Override
-    public List<GiftTag> findByGift(long id) throws SQLException {
+    public List<GiftTag> findByGift(long id) {
         return repository.findByGift(id);
     }
 }

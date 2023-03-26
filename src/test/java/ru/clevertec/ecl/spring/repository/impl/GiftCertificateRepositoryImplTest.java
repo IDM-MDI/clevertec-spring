@@ -6,11 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
 import java.math.BigDecimal;
@@ -25,6 +25,7 @@ class GiftCertificateRepositoryImplTest {
     private static final int SIZE = 5;
     private static final String FILTER = "id";
     private static final String DIRECTION = "asc";
+    private static final String MORE_THAN_255 = "asodkasdaslkjelksajdklasjeklasjdalskjdaksjdlaksjdasldjkaslkdjaskldjaslkdjaslkdjaslkdjasdlakjewklajsdlkajsdklasjdlkasdjaklsdjkasljdlkasjdlkajwelkajsldkjaslkdjaslkdjaslkdjalskdjaklsdjalksdjakljeklwajklasjdklasjdklasdjklasjdaklwjeklajsdlkasjdklajskldjasdasdasd";
     private GiftCertificateRepositoryImpl repository;
     private EmbeddedDatabase db;
 
@@ -45,13 +46,13 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class FindByPage {
         @Test
-        void findTagsByPageShouldReturnCorrectList() throws SQLException {
+        void findTagsByPageShouldReturnCorrectList() {
             List<GiftCertificate> result = repository.findGifts(PAGE, SIZE, FILTER, DIRECTION);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
-        void findTagsByPageShouldReturnEmptyList() throws SQLException {
+        void findTagsByPageShouldReturnEmptyList() {
             List<GiftCertificate> result = repository.findGifts(PAGE + 100, SIZE, FILTER, DIRECTION);
             Assertions.assertThat(result)
                     .isEmpty();
@@ -60,16 +61,16 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class FindByTag {
         @Test
-        void findTagsByTagShouldReturnCorrectList() throws SQLException {
+        void findTagsByTagShouldReturnCorrectList() {
             GiftCertificate gift = GiftCertificate.builder()
-                    .name("Amazon Gift Card")
+                    .name("Amazon")
                     .build();
             List<GiftCertificate> result = repository.findGifts(gift);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
-        void findTagsByTagShouldReturnEmptyList() throws SQLException {
+        void findTagsByTagShouldReturnEmptyList() {
             GiftCertificate certificate = GiftCertificate.builder()
                     .id(100L)
                     .build();
@@ -81,13 +82,13 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class FindByID {
         @Test
-        void findTagByIDShouldReturnPresentValue() throws SQLException {
+        void findTagByIDShouldReturnPresentValue() {
             Optional<GiftCertificate> result = repository.findGift(1L);
             Assertions.assertThat(result)
                     .isPresent();
         }
         @Test
-        void findTagByIDShouldReturnEmptyValue() throws SQLException {
+        void findTagByIDShouldReturnEmptyValue() {
             Optional<GiftCertificate> result = repository.findGift(0L);
             Assertions.assertThat(result)
                     .isNotPresent();
@@ -98,7 +99,7 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class Save {
         @Test
-        void saveShouldReturnSavedTag() throws SQLException {
+        void saveShouldReturnSavedTag() {
             String exceptionName = "Test tag";
             GiftCertificate result = repository.save(
                     GiftCertificate.builder()
@@ -112,16 +113,28 @@ class GiftCertificateRepositoryImplTest {
                     .isEqualTo(exceptionName);
         }
         @Test
-        void saveShouldThrowSQLException() throws SQLException {
+        void saveShouldThrowDataIntegrityViolationException() {
             Assertions.assertThatThrownBy(() -> repository.save(GiftCertificate.builder().build()))
-                    .isInstanceOf(DataIntegrityViolationException.class);
+                    .isInstanceOf(RepositoryException.class);
+        }
+        @Test
+        void saveShouldThrowSQLException() {
+            Assertions.assertThatThrownBy(() -> repository.save(
+                            GiftCertificate.builder()
+                                    .name(MORE_THAN_255)
+                                    .description("test description")
+                                    .price(new BigDecimal(100))
+                                    .duration(100)
+                                    .build()
+                    ))
+                    .isInstanceOf(RepositoryException.class);
         }
     }
 
     @Nested
     class Update {
         @Test
-        void updateShouldReturnUpdatedTag() throws SQLException {
+        void updateShouldReturnUpdatedTag() {
             GiftCertificate expected = GiftCertificate.builder()
                     .id(1L)
                     .name("test")
@@ -134,7 +147,7 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class Delete {
         @Test
-        void deleteShouldChangeStatusToDelete() throws SQLException {
+        void deleteShouldChangeStatusToDelete() {
             repository.delete(1L);
             GiftCertificate result = repository.findGift(1L)
                     .get();
