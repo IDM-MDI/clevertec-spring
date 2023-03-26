@@ -1,6 +1,6 @@
 CREATE TABLE gift_certificate (
                                   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                                  name VARCHAR(255) NOT NULL,
+                                  name VARCHAR(255) UNIQUE NOT NULL,
                                   description VARCHAR(255) NOT NULL,
                                   price DECIMAL(10, 2) NOT NULL,
                                   duration BIGINT NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE gift_certificate (
 
 CREATE TABLE tag (
                      id BIGINT PRIMARY KEY AUTO_INCREMENT,
-                     name VARCHAR(255) NOT NULL,
+                     name VARCHAR(255) UNIQUE NOT NULL,
                      status VARCHAR(255) NOT NULL
 );
 

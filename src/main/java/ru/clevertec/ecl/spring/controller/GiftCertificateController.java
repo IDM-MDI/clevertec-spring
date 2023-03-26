@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -25,24 +26,24 @@ public class GiftCertificateController {
     public List<GiftCertificateDTO> findGifts(@RequestParam(defaultValue = "0") @Min(0) int page,
                                               @RequestParam(defaultValue = "10") @Min(1) int size,
                                               @RequestParam(defaultValue = "id") @NotBlank String filter,
-                                              @RequestParam(defaultValue = "asc") @NotBlank String direction) {
+                                              @RequestParam(defaultValue = "asc") @NotBlank String direction) throws SQLException {
         return service.findGifts(page, size, filter, direction);
     }
     @GetMapping("/{id}")
-    public GiftCertificateDTO findGift(@PathVariable long id) {
+    public GiftCertificateDTO findGift(@PathVariable long id) throws SQLException {
         return service.findGift(id);
     }
     @PostMapping
-    public GiftCertificateDTO saveGift(@RequestBody GiftCertificateDTO gift) {
+    public GiftCertificateDTO saveGift(@RequestBody GiftCertificateDTO gift) throws SQLException {
         return service.save(gift);
     }
     @PatchMapping("/{id}")
     public GiftCertificateDTO updateGift(@PathVariable long id,
-                             @RequestBody GiftCertificateDTO gift) {
+                             @RequestBody GiftCertificateDTO gift) throws SQLException {
         return service.update(gift, id);
     }
     @GetMapping("/search")
-    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
+    public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) throws SQLException {
         return service.findGifts(gift, tag);
     }
 }
