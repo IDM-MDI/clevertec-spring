@@ -133,7 +133,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         }
         return builder.toString();
     }
-    public static String createUpdateQuery(GiftCertificate certificate) {
+    private static String createUpdateQuery(GiftCertificate certificate) {
         StringBuilder builder = new StringBuilder(UPDATE);
         if(StringUtils.isNotBlank(certificate.getName())) {
             builder.append(NAME)

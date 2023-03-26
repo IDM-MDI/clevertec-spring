@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Configuration
+@Profile("!test")
 public class SQLConfig {
     @Value("${datasource.classname}")
     private String classname;
@@ -36,7 +37,6 @@ public class SQLConfig {
     }
 
     @Bean
-    @Profile("!test")
     public Flyway flyway() {
         ClassicConfiguration config = new ClassicConfiguration();
         config.setDataSource(dataSource());
@@ -49,9 +49,5 @@ public class SQLConfig {
     @Bean
     public JdbcTemplate jdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource().getConnection());
-    }
-    @Bean
-    public SimpleJdbcInsert jdbcInsert() {
-        return new SimpleJdbcInsert(dataSource());
     }
 }
