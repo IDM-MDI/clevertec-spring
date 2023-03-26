@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @EqualsAndHashCode
@@ -32,9 +32,11 @@ public class GiftCertificateDTO {
     @Min(1)
     private long duration;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime createDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private String createDate;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime updateDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private String updateDate;
     private String status;
     private List<TagDTO> tags;
 
@@ -58,11 +60,12 @@ public class GiftCertificateDTO {
         return this.duration;
     }
 
-    public LocalDateTime getCreateDate() {
+
+    public @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String getCreateDate() {
         return this.createDate;
     }
 
-    public LocalDateTime getUpdateDate() {
+    public @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) String getUpdateDate() {
         return this.updateDate;
     }
 
@@ -96,12 +99,12 @@ public class GiftCertificateDTO {
     }
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public void setUpdateDate(LocalDateTime updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 
