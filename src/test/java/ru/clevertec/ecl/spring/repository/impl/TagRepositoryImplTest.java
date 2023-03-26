@@ -5,7 +5,9 @@ import org.assertj.core.api.Assertions;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -41,70 +43,102 @@ class TagRepositoryImplTest {
     void teardown() {
         db.shutdown();
     }
-    @Test
-    void findTagsByPageShouldReturnCorrectList() throws SQLException {
-        List<Tag> result = repository.findTags(PAGE, SIZE, FILTER, DIRECTION);
-        Assertions.assertThat(result)
-                .isNotEmpty();
+    @Nested
+    class FindByPage {
+        @Test
+        void findTagsByPageShouldReturnCorrectList() throws SQLException {
+            List<Tag> result = repository.findTags(PAGE, SIZE, FILTER, DIRECTION);
+            Assertions.assertThat(result)
+                    .isNotEmpty();
+        }
+        @Test
+        void findTagsByPageShouldReturnEmptyList() throws SQLException {
+            List<Tag> result = repository.findTags(PAGE + 100, SIZE, FILTER, DIRECTION);
+            Assertions.assertThat(result)
+                    .isEmpty();
+        }
     }
-    @Test
-    void findTagsByPageShouldReturnEmptyList() throws SQLException {
-        List<Tag> result = repository.findTags(PAGE + 100, SIZE, FILTER, DIRECTION);
-        Assertions.assertThat(result)
-                .isEmpty();
+    @Nested
+    class FindByTag {
+        @Test
+        void findTagsByTagShouldReturnCorrectList() throws SQLException {
+            Tag tag = Tag.builder()
+                    .name("Entertainment")
+                    .build();
+            List<Tag> result = repository.findTags(tag);
+            Assertions.assertThat(result)
+                    .isNotEmpty();
+        }
+        @Test
+        void findTagsByTagShouldReturnEmptyList() throws SQLException {
+            Tag tag = Tag.builder()
+                    .id(100L)
+                    .build();
+            List<Tag> result = repository.findTags(tag);
+            Assertions.assertThat(result)
+                    .isEmpty();
+        }
     }
-    @Test
-    void findTagsByTagShouldReturnCorrectList() throws SQLException {
-        Tag tag = Tag.builder()
-                .name("Entertainment")
-                .build();
-        List<Tag> result = repository.findTags(tag);
-        Assertions.assertThat(result)
-                .isNotEmpty();
-    }
-    @Test
-    void findTagByIDShouldReturnPresentValue() throws SQLException {
-        Optional<Tag> result = repository.findTag(1L);
-        Assertions.assertThat(result)
-                .isPresent();
-    }
-    @Test
-    void findTagByIDShouldReturnEmptyValue() throws SQLException {
-        Optional<Tag> result = repository.findTag(0L);
-        Assertions.assertThat(result)
-                .isNotPresent();
+    @Nested
+    class FindByID {
+        @Test
+        void findTagByIDShouldReturnPresentValue() throws SQLException {
+            Optional<Tag> result = repository.findTag(1L);
+            Assertions.assertThat(result)
+                    .isPresent();
+        }
+        @Test
+        void findTagByIDShouldReturnEmptyValue() throws SQLException {
+            Optional<Tag> result = repository.findTag(0L);
+            Assertions.assertThat(result)
+                    .isNotPresent();
+        }
+
     }
 
-    @Test
-    void saveShouldReturnSavedTag() throws SQLException {
-        String exceptionName = "Test tag";
-        Tag result = repository.save(
-                Tag.builder()
-                        .name(exceptionName)
-                        .build()
-        );
-        Assertions.assertThat(result.getName())
-                .isEqualTo(exceptionName);
+    @Nested
+    class Save {
+        @Test
+        void saveShouldReturnSavedTag() throws SQLException {
+            String exceptionName = "Test tag";
+            Tag result = repository.save(
+                    Tag.builder()
+                            .name(exceptionName)
+                            .build()
+            );
+            Assertions.assertThat(result.getName())
+                    .isEqualTo(exceptionName);
+        }
+        @Test
+        void saveShouldThrowSQLException() throws SQLException {
+            Assertions.assertThatThrownBy(() -> repository.save(Tag.builder().build()))
+                    .isInstanceOf(DataIntegrityViolationException.class);
+        }
     }
 
-    @Test
-    void updateShouldReturnUpdatedTag() throws SQLException {
-        Tag expected = Tag.builder()
-                .id(1L)
-                .name("test")
-                .status(ACTIVE)
-                .build();
-        Tag result = repository.update(expected,expected.getId());
-        Assertions.assertThat(result)
-                .isEqualTo(expected);
+    @Nested
+    class Update {
+        @Test
+        void updateShouldReturnUpdatedTag() throws SQLException {
+            Tag expected = Tag.builder()
+                    .id(1L)
+                    .name("test")
+                    .status(ACTIVE)
+                    .build();
+            Tag result = repository.update(expected,expected.getId());
+            Assertions.assertThat(result)
+                    .isEqualTo(expected);
+        }
     }
-
-    @Test
-    void deleteShouldChangeStatusToDelete() throws SQLException {
-        repository.delete(1L);
-        Tag result = repository.findTag(1L)
-                .get();
-        Assertions.assertThat(result.getStatus())
-                .isEqualTo(DELETED);
+    @Nested
+    class Delete {
+        @Test
+        void deleteShouldChangeStatusToDelete() throws SQLException {
+            repository.delete(1L);
+            Tag result = repository.findTag(1L)
+                    .get();
+            Assertions.assertThat(result.getStatus())
+                    .isEqualTo(DELETED);
+        }
     }
 }

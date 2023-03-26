@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.Tag;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
 import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
@@ -75,14 +77,14 @@ public class TagRepositoryImpl implements TagRepository {
     public Tag save(Tag tag) throws SQLException {
         Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(tag)));
         return findTag(number.longValue())
-                .orElseThrow();             //TODO : FINISH EXCEPTION
+                .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
     }
 
     @Override
     public Tag update(Tag tag, long id) throws SQLException {
         template.update(UPDATE, tag.getName(), String.valueOf(id));
         return findTag(id)
-                .orElseThrow();             //TODO : FINISH EXCEPTION
+                .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
     }
 
     @Override
