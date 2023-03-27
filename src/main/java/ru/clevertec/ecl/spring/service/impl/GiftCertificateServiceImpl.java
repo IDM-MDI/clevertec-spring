@@ -12,7 +12,6 @@ import ru.clevertec.ecl.spring.service.GiftCertificateService;
 import ru.clevertec.ecl.spring.service.GiftTagService;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
-import ru.clevertec.ecl.spring.util.TagMapper;
 
 import java.util.List;
 
@@ -23,7 +22,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftCertificateMapper mapper;
     private final TagService tagService;
     private final GiftTagService giftTagService;
-    private final TagMapper tagMapper;
 
     @Override
     public List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction) {
@@ -56,38 +54,32 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public GiftCertificateDTO save(GiftCertificateDTO gift) {
         GiftCertificateDTO saved = mapper.toModel(repository.save(mapper.toEntity(gift)));
-        saved.setTags(
-                tagService.saveAll(gift.getTags())
-                        .stream()
-                        .map(tagMapper::toModel)
-                        .toList()
-        );
-        saved.getTags().forEach(tag -> GiftTag.builder()
-                        .giftID(saved.getId())
-                        .tagID(tag.getId())
-                        .build());
+        saveTagRelation(gift, saved);
         return saved;
     }
 
     @Override
     public GiftCertificateDTO update(GiftCertificateDTO gift, long id) {
         GiftCertificateDTO updated = mapper.toModel(repository.update(mapper.toEntity(gift), id));
-        updated.setTags(
-                tagService.saveAll(gift.getTags())
-                        .stream()
-                        .map(tagMapper::toModel)
-                        .toList()
-        );
-        updated.getTags().forEach(tag -> GiftTag.builder()
-                .giftID(updated.getId())
-                .tagID(tag.getId())
-                .build());
+        saveTagRelation(gift, updated);
         return updated;
     }
 
     @Override
     public void delete(long id) {
         repository.delete(id);
+    }
+
+    private void saveTagRelation(GiftCertificateDTO gift, GiftCertificateDTO saved) {
+        saved.setTags(tagService.saveAll(gift.getTags()));
+        saved.getTags()
+                .forEach(tag -> giftTagService.save(
+                        GiftTag.builder()
+                                .giftID(saved.getId())
+                                .tagID(tag.getId())
+                                .build()
+                        )
+                );
     }
 
     private void fillGiftsWithTag(List<GiftCertificateDTO> gifts) {

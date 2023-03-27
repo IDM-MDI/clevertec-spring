@@ -14,7 +14,7 @@ public class GiftTagServiceImpl implements GiftTagService {
     private final GiftTagRepository repository;
     @Override
     public void saveAll(List<GiftTag> relations) {
-        relations.forEach(repository::save);
+        repository.saveAll(relations);
     }
 
     @Override

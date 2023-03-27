@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.spring.service;
 
-import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
 import java.util.List;
@@ -11,7 +10,7 @@ public interface TagService {
     TagDTO findTag(long id);
     TagDTO save(TagDTO tag);
     TagDTO update(TagDTO tag,long id);
-    List<Tag> saveAll(List<TagDTO> tags);
+    List<TagDTO> saveAll(List<TagDTO> tags);
 
     void delete(long id);
 }

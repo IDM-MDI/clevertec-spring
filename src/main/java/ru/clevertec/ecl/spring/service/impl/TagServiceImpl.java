@@ -2,7 +2,6 @@ package ru.clevertec.ecl.spring.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.service.TagService;
@@ -50,10 +49,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> saveAll(List<TagDTO> tags) {
+    public List<TagDTO> saveAll(List<TagDTO> tags) {
         return tags.stream()
                 .map(this::save)
-                .map(mapper::toEntity)
                 .toList();
     }
 
