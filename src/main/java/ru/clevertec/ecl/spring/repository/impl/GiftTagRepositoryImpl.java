@@ -51,25 +51,24 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
 
     @Override
     public List<GiftTag> findByTag(long id) {
-        try {
-            return template.query(String.format(FIND_BY_COLUMN, TAG_ID), rowMapper, String.valueOf(id));
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
-        }
+        return getTagByColumn(id, TAG_ID);
     }
 
     @Override
     public List<GiftTag> findByGift(long id) {
+        return getTagByColumn(id, GIFT_ID);
+    }
+
+    private List<GiftTag> getTagByColumn(long id, String giftId) {
         try {
-            return template.query(String.format(FIND_BY_COLUMN, GIFT_ID), rowMapper, String.valueOf(id));
+            return template.query(String.format(FIND_BY_COLUMN, giftId), rowMapper, String.valueOf(id));
         } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
         } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
         }
     }
+
     private Map<String, Object> createInsertMap(GiftTag relation) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(GIFT_ID, relation.getGiftID());

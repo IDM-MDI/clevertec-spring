@@ -2,6 +2,7 @@ package ru.clevertec.ecl.spring.repository.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
+import org.flywaydb.core.internal.jdbc.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,6 +29,10 @@ import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY
 import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
 import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.deleteExceptionMethod;
+import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findByID;
+import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntities;
+import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntitiesByPage;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
@@ -62,37 +67,17 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public List<Tag> findTags(int page, int size, String filter, String direction) {
-        try {
-            return template.query(String.format(FIND_BY_PAGE, filter, direction), rowMapper, size, page);
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
-        }
+        return findEntitiesByPage(template, rowMapper, String.format(FIND_BY_PAGE, filter, direction), size, page);
     }
 
     @Override
     public List<Tag> findTags(Tag tag) {
-        try {
-            return template.query(createSearchQuery(tag),rowMapper);
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
-        }
+        return findEntities(template, createSearchQuery(tag), rowMapper);
     }
 
     @Override
     public Optional<Tag> findTag(long id) {
-        try {
-            return template.query(String.format(FIND_BY_COLUMN, ID), rowMapper, String.valueOf(id))
-                    .stream()
-                    .findFirst();
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
-        }
+        return findByID(template,id,String.format(FIND_BY_COLUMN, ID), rowMapper);
     }
 
     @Override
@@ -102,9 +87,9 @@ public class TagRepositoryImpl implements TagRepository {
             return findTag(number.longValue())
                     .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
         } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
         }
     }
 
@@ -115,23 +100,17 @@ public class TagRepositoryImpl implements TagRepository {
             return findTag(id)
                     .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
         } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
         } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
+            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
         }
     }
 
     @Override
     public void delete(long id) {
-        try {
-            template.execute(String.format(SET_STATUS, DELETED, ID), String.valueOf(id));
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION + e.getMessage());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION + e.getMessage());
-        }
+        deleteExceptionMethod(id, template, SET_STATUS);
     }
 
     private Map<String, Object> createInsertMap(Tag tag) {
