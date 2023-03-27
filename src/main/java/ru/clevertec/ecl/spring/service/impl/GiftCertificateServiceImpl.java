@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
+import ru.clevertec.ecl.spring.exception.ExceptionStatus;
+import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
@@ -14,6 +16,8 @@ import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
 
 import java.util.List;
+
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +50,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDTO findGift(long id) {
         GiftCertificateDTO gift = repository.findGift(id)
                 .map(mapper::toModel)
-                .orElseThrow();
+                .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()));
         gift.setTags(fillGiftWithTag(id));
         return gift;
     }
@@ -98,7 +102,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                                 .build()
                 ).stream()
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()));
         List<GiftTag> relations = giftTagService.findByTag(tagDTO.getId());
         return byGift.stream()
                 .filter(foundedGift ->

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
+import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
@@ -25,6 +26,7 @@ import java.util.Optional;
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EXCEPTION;
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 import static ru.clevertec.ecl.spring.repository.ColumnName.CREATE_DATE;
@@ -93,12 +95,11 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(certificate)));
             return findGift(number.longValue())
-                    .orElseThrow();
-
+                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 
@@ -107,14 +108,13 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
         try {
             template.update(createUpdateQuery(certificate),String.valueOf(id));
             return findGift(id)
-                    .orElseThrow();
-
+                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 

@@ -87,9 +87,9 @@ public class TagRepositoryImpl implements TagRepository {
             return findTag(number.longValue())
                     .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 
@@ -100,11 +100,11 @@ public class TagRepositoryImpl implements TagRepository {
             return findTag(id)
                     .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
         } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(String.format(ENTITY_FIELDS_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 

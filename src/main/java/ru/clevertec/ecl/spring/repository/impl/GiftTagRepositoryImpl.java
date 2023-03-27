@@ -63,9 +63,9 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
         try {
             return template.query(String.format(FIND_BY_COLUMN, giftId), rowMapper, String.valueOf(id));
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 

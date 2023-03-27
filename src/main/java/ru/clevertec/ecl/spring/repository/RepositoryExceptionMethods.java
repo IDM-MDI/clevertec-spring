@@ -18,9 +18,9 @@ public interface RepositoryExceptionMethods {
         try {
             template.execute(String.format(setStatus, DELETED, ID), String.valueOf(id));
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
     static <T> Optional<T> findByID(JdbcTemplate template , long id, String query, RowMapper<T> rowMapper) {
@@ -29,27 +29,27 @@ public interface RepositoryExceptionMethods {
                     .stream()
                     .findFirst();
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
     static  <T> List<T> findEntities(JdbcTemplate template, String query, RowMapper<T> rowMapper) {
         try {
             return template.query(query, rowMapper);
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-    static <T> List<T> findEntitiesByPage(JdbcTemplate template, RowMapper<T> rowMapper, String query, int page, int size) {
+    static <T> List<T> findEntitiesByPage(JdbcTemplate template, RowMapper<T> rowMapper, String query, int size, int page) {
         try {
             return template.query(query, rowMapper, size, page);
         } catch (SQLException e) {
-            throw new RepositoryException(String.format(ENTITY_SQL_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
         } catch (Exception e) {
-            throw new RepositoryException(String.format(OTHER_REPOSITORY_EXCEPTION.toString(), e.getMessage()));
+            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
 }

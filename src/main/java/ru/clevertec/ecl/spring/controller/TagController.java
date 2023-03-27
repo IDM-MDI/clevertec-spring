@@ -1,9 +1,11 @@
 package ru.clevertec.ecl.spring.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
+@Validated
 public class TagController {
     private final TagService service;
     @GetMapping
@@ -31,11 +34,11 @@ public class TagController {
         return service.findTags(page, size, filter, direction);
     }
     @GetMapping("/{id}")
-    public TagDTO findTag(@PathVariable long id) {
+    public TagDTO findTag(@PathVariable @Min(1) long id) {
         return service.findTag(id);
     }
     @PostMapping
-    public TagDTO saveTag(@RequestBody TagDTO tag) {
+    public TagDTO saveTag(@RequestBody @Valid TagDTO tag) {
         return service.save(tag);
     }
     @PatchMapping("/{id}")
@@ -44,7 +47,7 @@ public class TagController {
         return service.update(tag, id);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTag(@PathVariable long id) {
+    public ResponseEntity<String> deleteTag(@PathVariable @Min(1) long id) {
         service.delete(id);
         return ResponseEntity.ok("Tag successfully deleted");
     }

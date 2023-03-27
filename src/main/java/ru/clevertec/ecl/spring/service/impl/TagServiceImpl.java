@@ -2,12 +2,15 @@ package ru.clevertec.ecl.spring.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.TagMapper;
 
 import java.util.List;
+
+import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +37,7 @@ public class TagServiceImpl implements TagService {
     public TagDTO findTag(long id) {
         return mapper.toModel(
                 repository.findTag(id)
-                        .orElseThrow()
+                        .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()))
         );
     }
 
