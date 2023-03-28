@@ -3,6 +3,7 @@ package ru.clevertec.ecl.spring.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.spring.exception.ServiceException;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.service.TagService;
@@ -18,8 +19,8 @@ public class TagServiceImpl implements TagService {
     private final TagRepository repository;
     private final TagMapper mapper;
     @Override
-    public List<TagDTO> findTags(int page, int size, String filter, String direction) {
-        return repository.findTags(page, size, filter, direction)
+    public List<TagDTO> findTags(PageFilter page) {
+        return repository.findTags(page)
                 .stream()
                 .map(mapper::toModel)
                 .toList();

@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.service.GiftTagService;
@@ -21,9 +22,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -32,10 +31,6 @@ import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
 class GiftCertificateServiceImplTest {
-    private static final int PAGE = 0;
-    private static final int SIZE = 5;
-    private static final String FILTER = "id";
-    private static final String DIRECTION = "asc";
     @Mock
     private GiftCertificateRepository repository;
     @Mock
@@ -46,12 +41,15 @@ class GiftCertificateServiceImplTest {
     private GiftTagService giftTagService;
     @InjectMocks
     private GiftCertificateServiceImpl service;
+
+    private PageFilter page;
     private List<GiftCertificate> entities;
     private List<GiftCertificateDTO> models;
     private List<TagDTO> tags;
     private List<GiftTag> relations;
     @BeforeEach
     void setup() {
+        page = new PageFilter();
         entities = List.of(
                 GiftCertificate.builder()
                         .id(1L)
@@ -136,7 +134,7 @@ class GiftCertificateServiceImplTest {
         void findGiftsByPageShouldReturnModelList() {
             doReturn(entities)
                     .when(repository)
-                    .findGifts(PAGE,SIZE,FILTER,DIRECTION);
+                    .findGifts(page);
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(GiftCertificate.class));
@@ -147,7 +145,7 @@ class GiftCertificateServiceImplTest {
                     .when(tagService)
                     .findTag(anyLong());
 
-            List<GiftCertificateDTO> result = service.findGifts(PAGE, SIZE, FILTER, DIRECTION);
+            List<GiftCertificateDTO> result = service.findGifts(page);
 
             Assertions.assertThat(result)
                     .isNotEmpty();

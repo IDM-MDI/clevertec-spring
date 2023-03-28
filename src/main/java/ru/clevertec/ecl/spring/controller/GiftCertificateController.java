@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
 
 import java.util.List;
@@ -27,11 +28,8 @@ import java.util.List;
 public class GiftCertificateController {
     private final GiftCertificateService service;
     @GetMapping
-    public List<GiftCertificateDTO> findGifts(@RequestParam(defaultValue = "0") @Min(0) int page,
-                                              @RequestParam(defaultValue = "10") @Min(1) int size,
-                                              @RequestParam(defaultValue = "id") @NotBlank String filter,
-                                              @RequestParam(defaultValue = "asc") @NotBlank String direction) {
-        return service.findGifts(page, size, filter, direction);
+    public List<GiftCertificateDTO> findGifts(PageFilter page) {
+        return service.findGifts(page);
     }
     @GetMapping("/{id}")
     public GiftCertificateDTO findGift(@PathVariable @Min(1) long id) {

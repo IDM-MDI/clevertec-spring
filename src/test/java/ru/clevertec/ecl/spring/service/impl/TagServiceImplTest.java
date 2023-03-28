@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.Tag;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.util.TagMapper;
@@ -24,10 +25,6 @@ import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
-    private static final int PAGE = 0;
-    private static final int SIZE = 5;
-    private static final String FILTER = "id";
-    private static final String DIRECTION = "asc";
     @Mock
     private TagRepository repository;
     @Mock
@@ -36,8 +33,10 @@ class TagServiceImplTest {
     private TagServiceImpl service;
     private List<Tag> entities;
     private List<TagDTO> models;
+    private PageFilter page;
     @BeforeEach
     void setup() {
+        page = new PageFilter();
         entities = List.of(
                 Tag.builder()
                         .id(1L)
@@ -79,13 +78,13 @@ class TagServiceImplTest {
         void findTagsByPageShouldReturnModelList() {
             doReturn(entities)
                     .when(repository)
-                    .findTags(PAGE,SIZE,FILTER,DIRECTION);
+                    .findTags(page);
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(Tag.class));
 
 
-            List<TagDTO> result = service.findTags(PAGE, SIZE, FILTER, DIRECTION);
+            List<TagDTO> result = service.findTags(page);
 
             Assertions.assertThat(result)
                     .isNotEmpty();

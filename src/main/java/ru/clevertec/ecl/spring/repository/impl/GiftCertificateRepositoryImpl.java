@@ -1,8 +1,8 @@
 package ru.clevertec.ecl.spring.repository.impl;
 
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
-import org.flywaydb.core.internal.jdbc.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
-import ru.clevertec.ecl.spring.exception.ServiceException;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
-import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EXCEPTION;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
@@ -76,8 +75,8 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
     }
 
     @Override
-    public List<GiftCertificate> findGifts(int page, int size, String filter, String direction) {
-        return findEntitiesByPage(template, rowMapper, String.format(FIND_BY_PAGE, filter, direction), size, page);
+    public List<GiftCertificate> findGifts(PageFilter page) {
+        return findEntitiesByPage(template, rowMapper, String.format(FIND_BY_PAGE, page.getFilter(), page.getDirection()), page.getSize(), page.getNumber());
     }
 
     @Override

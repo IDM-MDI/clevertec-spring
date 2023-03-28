@@ -5,9 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
-import ru.clevertec.ecl.spring.exception.ExceptionStatus;
 import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
@@ -28,8 +28,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftTagService giftTagService;
 
     @Override
-    public List<GiftCertificateDTO> findGifts(int page, int size, String filter, String direction) {
-        List<GiftCertificateDTO> gifts = repository.findGifts(page, size, filter, direction)
+    public List<GiftCertificateDTO> findGifts(PageFilter page) {
+        List<GiftCertificateDTO> gifts = repository.findGifts(page)
                 .stream()
                 .map(mapper::toModel)
                 .toList();

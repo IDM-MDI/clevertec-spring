@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
 import java.math.BigDecimal;
@@ -21,16 +22,14 @@ import java.util.Optional;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
 class GiftCertificateRepositoryImplTest {
-    private static final int PAGE = 0;
-    private static final int SIZE = 5;
-    private static final String FILTER = "id";
-    private static final String DIRECTION = "asc";
     private static final String MORE_THAN_255 = "asodkasdaslkjelksajdklasjeklasjdalskjdaksjdlaksjdasldjkaslkdjaskldjaslkdjaslkdjaslkdjasdlakjewklajsdlkajsdklasjdlkasdjaklsdjkasljdlkasjdlkajwelkajsldkjaslkdjaslkdjaslkdjalskdjaklsdjalksdjakljeklwajklasjdklasjdklasdjklasjdaklwjeklajsdlkasjdklajskldjasdasdasd";
     private GiftCertificateRepositoryImpl repository;
     private EmbeddedDatabase db;
+    private PageFilter page;
 
     @BeforeEach
     void setup() throws SQLException {
+        page = new PageFilter();
         db = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
@@ -47,13 +46,14 @@ class GiftCertificateRepositoryImplTest {
     class FindByPage {
         @Test
         void findTagsByPageShouldReturnCorrectList() {
-            List<GiftCertificate> result = repository.findGifts(PAGE, SIZE, FILTER, DIRECTION);
+            List<GiftCertificate> result = repository.findGifts(page);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
         void findTagsByPageShouldReturnEmptyList() {
-            List<GiftCertificate> result = repository.findGifts(PAGE + 100, SIZE, FILTER, DIRECTION);
+            page.setNumber(100);
+            List<GiftCertificate> result = repository.findGifts(page);
             Assertions.assertThat(result)
                     .isEmpty();
         }

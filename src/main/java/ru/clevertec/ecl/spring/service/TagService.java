@@ -1,11 +1,12 @@
 package ru.clevertec.ecl.spring.service;
 
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
 import java.util.List;
 
 public interface TagService {
-    List<TagDTO> findTags(int page, int size, String filter, String direction);
+    List<TagDTO> findTags(PageFilter page);
     List<TagDTO> findTags(TagDTO tag);
     TagDTO findTag(long id);
     TagDTO save(TagDTO tag);

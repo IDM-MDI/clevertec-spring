@@ -12,6 +12,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
+import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
 import java.sql.SQLException;
@@ -22,15 +23,13 @@ import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
 class TagRepositoryImplTest {
-    private static final int PAGE = 0;
-    private static final int SIZE = 5;
-    private static final String FILTER = "id";
-    private static final String DIRECTION = "asc";
     private TagRepositoryImpl repository;
     private EmbeddedDatabase db;
+    private PageFilter page;
 
     @BeforeEach
     void setup() throws SQLException {
+        page = new PageFilter();
         db = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
@@ -47,13 +46,14 @@ class TagRepositoryImplTest {
     class FindByPage {
         @Test
         void findTagsByPageShouldReturnCorrectList() {
-            List<Tag> result = repository.findTags(PAGE, SIZE, FILTER, DIRECTION);
+            List<Tag> result = repository.findTags(page);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
         void findTagsByPageShouldReturnEmptyList() {
-            List<Tag> result = repository.findTags(PAGE + 100, SIZE, FILTER, DIRECTION);
+            page.setNumber(100);
+            List<Tag> result = repository.findTags(page);
             Assertions.assertThat(result)
                     .isEmpty();
         }
