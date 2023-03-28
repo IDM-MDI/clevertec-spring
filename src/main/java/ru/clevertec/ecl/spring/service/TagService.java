@@ -8,6 +8,7 @@ import java.util.List;
 public interface TagService {
     List<TagDTO> findTags(PageFilter page);
     List<TagDTO> findTags(TagDTO tag);
+    TagDTO findTag(TagDTO tag);
     TagDTO findTag(long id);
     TagDTO save(TagDTO tag);
     TagDTO update(TagDTO tag,long id);

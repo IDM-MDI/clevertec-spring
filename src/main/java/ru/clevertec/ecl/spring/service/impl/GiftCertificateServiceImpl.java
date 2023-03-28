@@ -40,9 +40,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
         List<GiftCertificate> byGift = repository.findGifts(mapper.toEntity(gift));
-        if(StringUtils.isNotBlank(tag)) {
-            byGift = searchByTag(byGift,tag);
-        }
+        byGift = StringUtils.isNotBlank(tag) ? searchByTag(byGift,tag) : byGift;
         return findByIDAll(byGift);
     }
 
@@ -71,19 +69,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void delete(long id) {
+        findGift(id);
         repository.delete(id);
     }
 
     private void saveTagRelation(GiftCertificateDTO gift, GiftCertificateDTO saved) {
         saved.setTags(tagService.saveAll(gift.getTags()));
-        saved.getTags()
-                .forEach(tag -> giftTagService.save(
-                        GiftTag.builder()
-                                .giftID(saved.getId())
-                                .tagID(tag.getId())
-                                .build()
-                        )
-                );
+        saved.getTags().forEach(tag -> giftTagService.save(saved.getId(),tag.getId()));
     }
 
     private void fillGiftsWithTag(List<GiftCertificateDTO> gifts) {
@@ -96,18 +88,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 .toList();
     }
     private List<GiftCertificate> searchByTag(List<GiftCertificate> byGift,String tag) {
-        TagDTO tagDTO = tagService.findTags(
-                        TagDTO.builder()
-                                .name(tag)
-                                .build()
-                ).stream()
-                .findFirst()
-                .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()));
+        TagDTO tagDTO = tagService.findTag(TagDTO.builder().name(tag).build());
         List<GiftTag> relations = giftTagService.findByTag(tagDTO.getId());
         return byGift.stream()
-                .filter(foundedGift ->
-                        relations.stream().anyMatch(giftTag -> giftTag.getGiftID() == foundedGift.getId())
-                )
+                .filter(foundedGift -> relations.stream().anyMatch(giftTag -> giftTag.getGiftID() == foundedGift.getId()))
                 .toList();
     }
     private List<TagDTO> fillGiftWithTag(long giftID) {

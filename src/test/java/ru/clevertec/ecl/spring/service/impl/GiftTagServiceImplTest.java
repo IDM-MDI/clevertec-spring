@@ -55,12 +55,24 @@ class GiftTagServiceImplTest {
     }
 
     @Test
-    void saveShouldReturnEntity() {
+    void saveByEntityShouldSaveEntity() {
         doNothing()
                 .when(repository)
                 .save(relations.get(0));
 
         service.save(relations.get(0));
+
+        verify(repository).save(relations.get(0));
+    }
+
+    @Test
+    void saveByIDShouldSaveEntity() {
+        long id = 1;
+        doNothing()
+                .when(repository)
+                .save(relations.get(0));
+
+        service.save(id, id);
 
         verify(repository).save(relations.get(0));
     }

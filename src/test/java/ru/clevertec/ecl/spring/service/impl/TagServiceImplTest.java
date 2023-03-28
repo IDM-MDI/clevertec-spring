@@ -9,11 +9,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.Tag;
+import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.util.TagMapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,6 +74,7 @@ class TagServiceImplTest {
                         .build()
         );
     }
+
     @Nested
     class FindTag {
         @Test
@@ -122,6 +125,35 @@ class TagServiceImplTest {
 
             Assertions.assertThat(result)
                     .isEqualTo(models.get(0));
+        }
+        @Test
+        void findTagShouldReturnTag() {
+            doReturn(entities.get(0))
+                    .when(mapper)
+                    .toEntity(any(TagDTO.class));
+            doReturn(entities)
+                    .when(repository)
+                    .findTags(entities.get(0));
+            doReturn(models.get(0))
+                    .when(mapper)
+                    .toModel(any(Tag.class));
+
+            TagDTO result = service.findTag(models.get(0));
+
+            Assertions.assertThat(result)
+                    .isEqualTo(models.get(0));
+        }
+        @Test
+        void findTagShouldThrowServiceException() {
+            doReturn(entities.get(0))
+                    .when(mapper)
+                    .toEntity(any(TagDTO.class));
+            doReturn(Collections.emptyList())
+                    .when(repository)
+                    .findTags(entities.get(0));
+
+            Assertions.assertThatThrownBy(() -> service.findTag(models.get(0)))
+                    .isInstanceOf(ServiceException.class);
         }
     }
 

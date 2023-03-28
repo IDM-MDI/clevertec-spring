@@ -23,6 +23,15 @@ public class GiftTagServiceImpl implements GiftTagService {
     }
 
     @Override
+    public void save(long gift, long tag) {
+        save(GiftTag.builder()
+                .giftID(gift)
+                .tagID(tag)
+                .build()
+        );
+    }
+
+    @Override
     public List<GiftTag> findByTag(long id) {
         return repository.findByTag(id);
     }
