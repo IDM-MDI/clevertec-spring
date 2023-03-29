@@ -7,9 +7,9 @@ import ru.clevertec.ecl.spring.entity.GiftTag;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ru.clevertec.ecl.spring.repository.ColumnName.GIFT_ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.TAG_ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.GIFT_ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.TAG_ID;
 
 @Component
 public class GiftTagRowMapper implements RowMapper<GiftTag> {

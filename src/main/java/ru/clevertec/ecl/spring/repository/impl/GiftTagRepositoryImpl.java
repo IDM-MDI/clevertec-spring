@@ -2,30 +2,25 @@ package ru.clevertec.ecl.spring.repository.impl;
 
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftTag;
-import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.GiftTagRepository;
+import ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
-import static ru.clevertec.ecl.spring.repository.ColumnName.GIFT_ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.TAG_ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.GIFT_ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.TAG_ID;
+import static ru.clevertec.ecl.spring.entity.TableName.GIFT_TAG;
+import static ru.clevertec.ecl.spring.repository.handler.GiftTagHandler.createInsertMap;
+import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
 
 @Repository
 public class GiftTagRepositoryImpl implements GiftTagRepository {
-    private static final String FIND_BY_COLUMN =
-            "SELECT * FROM gift_tag " +
-                    "WHERE %s = ?";
     private final JdbcTemplate template;
     private final SimpleJdbcInsert jdbcInsert;
     private final GiftTagRowMapper rowMapper;
@@ -35,8 +30,8 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
         this.template = template;
         this.rowMapper = rowMapper;
         jdbcInsert = new SimpleJdbcInsert(source)
-                .withTableName("gift_tag")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(GIFT_TAG)
+                .usingGeneratedKeyColumns(ID);
     }
 
     @Override
@@ -46,33 +41,22 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
 
     @Override
     public void save(GiftTag relation) {
-        jdbcInsert.execute(new MapSqlParameterSource(createInsertMap(relation)));
+        RepositoryExceptionMethods
+                .save(jdbcInsert, createInsertMap(relation), number -> null);
     }
 
     @Override
     public List<GiftTag> findByTag(long id) {
-        return getTagByColumn(id, TAG_ID);
+        return findByColumn(id, TAG_ID);
     }
 
     @Override
     public List<GiftTag> findByGift(long id) {
-        return getTagByColumn(id, GIFT_ID);
+        return findByColumn(id, GIFT_ID);
     }
 
-    private List<GiftTag> getTagByColumn(long id, String giftId) {
-        try {
-            return template.query(String.format(FIND_BY_COLUMN, giftId), rowMapper, String.valueOf(id));
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
-        }
-    }
-
-    private Map<String, Object> createInsertMap(GiftTag relation) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(GIFT_ID, relation.getGiftID());
-        parameters.put(TAG_ID, relation.getTagID());
-        return parameters;
+    private List<GiftTag> findByColumn(long id, String column) {
+        return RepositoryExceptionMethods
+                .findByColumn(template,findAllByColumn(GIFT_TAG, column), rowMapper, String.valueOf(id));
     }
 }

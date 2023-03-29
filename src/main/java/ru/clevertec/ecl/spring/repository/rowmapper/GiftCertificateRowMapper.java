@@ -7,14 +7,14 @@ import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ru.clevertec.ecl.spring.repository.ColumnName.CREATE_DATE;
-import static ru.clevertec.ecl.spring.repository.ColumnName.DESCRIPTION;
-import static ru.clevertec.ecl.spring.repository.ColumnName.DURATION;
-import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
-import static ru.clevertec.ecl.spring.repository.ColumnName.UPDATE_DATE;
-import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
-import static ru.clevertec.ecl.spring.repository.ColumnName.PRICE;
+import static ru.clevertec.ecl.spring.entity.ColumnName.CREATE_DATE;
+import static ru.clevertec.ecl.spring.entity.ColumnName.DESCRIPTION;
+import static ru.clevertec.ecl.spring.entity.ColumnName.DURATION;
+import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.entity.ColumnName.UPDATE_DATE;
+import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
+import static ru.clevertec.ecl.spring.entity.ColumnName.PRICE;
 
 @Component
 public class GiftCertificateRowMapper implements RowMapper<GiftCertificate> {

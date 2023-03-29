@@ -7,9 +7,9 @@ import ru.clevertec.ecl.spring.entity.Tag;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
-import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
+import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 
 @Component
 public class TagRowMapper implements RowMapper<Tag> {

@@ -1,57 +1,38 @@
 package ru.clevertec.ecl.spring.repository.impl;
 
 import jakarta.validation.constraints.NotNull;
-import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
+import ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EXCEPTION;
+import static ru.clevertec.ecl.spring.entity.ColumnName.DELETED;
+import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
+import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
+import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.entity.TableName.TAG;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
-import static ru.clevertec.ecl.spring.repository.ColumnName.ID;
-import static ru.clevertec.ecl.spring.repository.ColumnName.NAME;
-import static ru.clevertec.ecl.spring.repository.ColumnName.STATUS;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.deleteExceptionMethod;
 import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findByID;
 import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntities;
 import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntitiesByPage;
+import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createInsertMap;
+import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createSearchQuery;
+import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
+import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByPage;
+import static ru.clevertec.ecl.spring.repository.query.SQLQuery.updateByOneColumn;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
-    private static final String FIND_BY_PAGE =
-            "SELECT * FROM tag " +
-            "ORDER BY %s %s " +
-            "LIMIT ? OFFSET ?";
-    private static final String FIND_BY_COLUMN =
-            "SELECT * FROM tag " +
-                    "WHERE %s = ?";
-    private static final String UPDATE =
-            "UPDATE tag " +
-            "SET name = ? " +
-            "WHERE id = ?";
-    private static final String SET_STATUS =
-            "UPDATE tag " +
-            "SET status = '%s' " +
-            "WHERE %s = ?";
-    private static final String SEARCH_START = "SELECT * FROM tag WHERE 1=1";
     private final JdbcTemplate template;
     private final SimpleJdbcInsert jdbcInsert;
     private final TagRowMapper rowMapper;
@@ -61,13 +42,13 @@ public class TagRepositoryImpl implements TagRepository {
         this.template = template;
         this.rowMapper = rowMapper;
         jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName("tag")
-                .usingGeneratedKeyColumns("id");
+                .withTableName(TAG)
+                .usingGeneratedKeyColumns(ID);
     }
 
     @Override
     public List<Tag> findTags(@NotNull PageFilter page) {
-        return findEntitiesByPage(template, rowMapper, String.format(FIND_BY_PAGE, page.getFilter(), page.getDirection()), page.getSize(), page.getNumber());
+        return findEntitiesByPage(template, rowMapper, findAllByPage(TAG, page.getFilter(), page.getDirection()), page.getSize(), page.getNumber());
     }
 
     @Override
@@ -77,63 +58,33 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Optional<Tag> findTag(long id) {
-        return findByID(template,id,String.format(FIND_BY_COLUMN, ID), rowMapper);
+        return findByID(template, findAllByColumn(TAG, ID), rowMapper, String.valueOf(id));
     }
 
     @Override
     public Tag save(Tag tag) {
-        try {
-            Number number = jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(createInsertMap(tag)));
-            return findTag(number.longValue())
-                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
-        } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
-        }
+        return RepositoryExceptionMethods.save(
+                jdbcInsert,
+                createInsertMap(tag),
+                number -> findTag(number.longValue())
+                        .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()))
+        );
     }
 
     @Override
     public Tag update(Tag tag, long id) {
-        try {
-            template.update(UPDATE, tag.getName(), String.valueOf(id));
-            return findTag(id)
-                    .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
-        } catch (DataIntegrityViolationException e) {
-            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
-        } catch (SQLException e) {
-            throw new RepositoryException(ENTITY_SQL_EXCEPTION.toString());
-        } catch (Exception e) {
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
-        }
+        return RepositoryExceptionMethods.update(
+                template,
+                updateByOneColumn(TAG, NAME, ID),
+                () -> findTag(id).orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString())),
+                tag.getName(), String.valueOf(id));
     }
-
     @Override
     public void delete(long id) {
-        deleteExceptionMethod(id, template, SET_STATUS);
-    }
-
-    private Map<String, Object> createInsertMap(Tag tag) {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(NAME, tag.getName());
-        parameters.put(STATUS, ACTIVE);
-        return parameters;
-    }
-
-    private String createSearchQuery(Tag tag) {
-        StringBuilder builder = new StringBuilder(SEARCH_START);
-        if(tag.getId() > 0) {
-            builder.append(" AND id = ")
-                    .append(tag.getId());
-        }
-        if(StringUtils.isNotBlank(tag.getName())) {
-            builder.append(" AND LOWER(name) LIKE ")
-                    .append(String.format("'%s'", "%" + tag.getName().toLowerCase() + "%"));
-        }
-        if(StringUtils.isNotBlank(tag.getStatus())) {
-            builder.append(" AND LOWER(status) LIKE ")
-                    .append(String.format("'%s'", "%" + tag.getStatus().toLowerCase() + "%"));
-        }
-        return builder.toString();
+        RepositoryExceptionMethods.update(
+                template,
+                updateByOneColumn(TAG, STATUS, ID),
+                () -> null,
+                DELETED, String.valueOf(id));
     }
 }
