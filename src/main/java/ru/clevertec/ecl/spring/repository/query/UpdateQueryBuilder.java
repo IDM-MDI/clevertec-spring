@@ -1,7 +1,10 @@
 package ru.clevertec.ecl.spring.repository.query;
 
+import lombok.EqualsAndHashCode;
+
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.BY_COLUMN;
 
+@EqualsAndHashCode
 public class UpdateQueryBuilder {
     private static final String UPDATE = "UPDATE %s SET ";
     private static final String SET_VALUE = "%s = %s,";
@@ -23,8 +26,5 @@ public class UpdateQueryBuilder {
         builder.deleteCharAt(builder.length() - 1);
         builder.append(String.format(BY_COLUMN, column));
         return builder.toString();
-    }
-    public void clear() {
-        builder.setLength(0);
     }
 }

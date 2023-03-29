@@ -1,7 +1,10 @@
 package ru.clevertec.ecl.spring.repository.query;
 
+import lombok.EqualsAndHashCode;
+
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAll;
 
+@EqualsAndHashCode
 public class SearchQueryBuilder {
     private static final String SEARCH_START = " WHERE 1=1";
     private static final String AND = " AND ";
@@ -33,9 +36,7 @@ public class SearchQueryBuilder {
         builder.append(String.format(LIKE_STRING,"%" + value + "%"));
         return this;
     }
-    public void clear() {
-        builder.setLength(0);
-    }
+
     public String build() {
         return builder.toString();
     }
