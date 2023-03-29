@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
+import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
@@ -18,7 +19,6 @@ import ru.clevertec.ecl.spring.service.GiftTagService;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +30,6 @@ import static org.mockito.Mockito.verify;
 import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
 import static ru.clevertec.ecl.spring.builder.impl.GiftTagBuilder.aGiftTag;
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
 class GiftCertificateServiceImplTest {
@@ -175,6 +174,15 @@ class GiftCertificateServiceImplTest {
 
             Assertions.assertThat(result)
                     .isNotNull();
+        }
+        @Test
+        void findGiftByIDShouldThrowServiceException() {
+            long id = 1;
+            doReturn(Optional.empty())
+                    .when(repository)
+                    .findGift(id);
+            Assertions.assertThatThrownBy(() -> service.findGift(id))
+                    .isInstanceOf(ServiceException.class);
         }
     }
 

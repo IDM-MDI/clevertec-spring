@@ -88,7 +88,7 @@ class TagServiceImplTest {
         }
 
         @Test
-        void findTagByIDShouldReturnModelList() {
+        void findTagByIDShouldReturnModel() {
             long id = 1;
             doReturn(Optional.of(entities.get(0)))
                     .when(repository)
@@ -101,6 +101,15 @@ class TagServiceImplTest {
 
             Assertions.assertThat(result)
                     .isEqualTo(models.get(0));
+        }
+        @Test
+        void findTagByIDShouldThrowServiceException() {
+            long id = 1;
+            doReturn(Optional.empty())
+                    .when(repository)
+                    .findTag(id);
+            Assertions.assertThatThrownBy(() -> service.findTag(id))
+                    .isInstanceOf(ServiceException.class);
         }
         @Test
         void findTagShouldReturnTag() {
