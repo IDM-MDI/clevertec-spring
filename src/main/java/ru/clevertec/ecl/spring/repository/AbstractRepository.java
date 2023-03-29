@@ -18,7 +18,7 @@ import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EX
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 
-public interface RepositoryExceptionMethods {
+public interface AbstractRepository {
     static <T> T update(JdbcTemplate template, String query, Supplier<T> returnValue, Object... args) {
         try {
             template.execute(query, args);

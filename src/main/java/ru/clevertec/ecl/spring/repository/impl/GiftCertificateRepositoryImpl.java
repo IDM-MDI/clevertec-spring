@@ -8,7 +8,7 @@ import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
-import ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods;
+import ru.clevertec.ecl.spring.repository.AbstractRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
 import javax.sql.DataSource;
@@ -20,9 +20,9 @@ import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.entity.TableName.GIFT_CERTIFICATE;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findByID;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntities;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntitiesByPage;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findByID;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntities;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntitiesByPage;
 import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createInsertMap;
 import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createSearchQuery;
 import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createUpdateQuery;
@@ -62,7 +62,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate save(GiftCertificate certificate)  {
-        return RepositoryExceptionMethods.save(
+        return AbstractRepository.save(
                 jdbcInsert,
                 createInsertMap(certificate),
                 number -> findGift(number.longValue())
@@ -72,7 +72,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public GiftCertificate update(GiftCertificate certificate, long id) {
-        return RepositoryExceptionMethods.update(
+        return AbstractRepository.update(
                 template,
                 createUpdateQuery(certificate),
                 () -> findGift(id)
@@ -83,7 +83,7 @@ public class GiftCertificateRepositoryImpl implements GiftCertificateRepository 
 
     @Override
     public void delete(long id) {
-        RepositoryExceptionMethods.update(
+        AbstractRepository.update(
                 template,
                 updateByOneColumn(GIFT_CERTIFICATE, STATUS, ID),
                 () -> null,

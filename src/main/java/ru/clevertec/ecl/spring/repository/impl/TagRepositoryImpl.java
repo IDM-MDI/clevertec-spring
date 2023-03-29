@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
-import ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods;
+import ru.clevertec.ecl.spring.repository.AbstractRepository;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
@@ -22,9 +22,9 @@ import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.entity.TableName.TAG;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findByID;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntities;
-import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findEntitiesByPage;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findByID;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntities;
+import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntitiesByPage;
 import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createInsertMap;
 import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createSearchQuery;
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
@@ -63,7 +63,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag save(Tag tag) {
-        return RepositoryExceptionMethods.save(
+        return AbstractRepository.save(
                 jdbcInsert,
                 createInsertMap(tag),
                 number -> findTag(number.longValue())
@@ -73,7 +73,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag update(Tag tag, long id) {
-        return RepositoryExceptionMethods.update(
+        return AbstractRepository.update(
                 template,
                 updateByOneColumn(TAG, NAME, ID),
                 () -> findTag(id).orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString())),
@@ -81,7 +81,7 @@ public class TagRepositoryImpl implements TagRepository {
     }
     @Override
     public void delete(long id) {
-        RepositoryExceptionMethods.update(
+        AbstractRepository.update(
                 template,
                 updateByOneColumn(TAG, STATUS, ID),
                 () -> null,

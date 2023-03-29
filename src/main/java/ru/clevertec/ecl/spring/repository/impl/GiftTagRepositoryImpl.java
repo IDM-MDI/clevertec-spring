@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.repository.GiftTagRepository;
-import ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods;
+import ru.clevertec.ecl.spring.repository.AbstractRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
 import javax.sql.DataSource;
@@ -41,7 +41,7 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
 
     @Override
     public void save(GiftTag relation) {
-        RepositoryExceptionMethods
+        AbstractRepository
                 .save(jdbcInsert, createInsertMap(relation), number -> null);
     }
 
@@ -56,7 +56,7 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
     }
 
     private List<GiftTag> findByColumn(long id, String column) {
-        return RepositoryExceptionMethods
+        return AbstractRepository
                 .findByColumn(template,findAllByColumn(GIFT_TAG, column), rowMapper, String.valueOf(id));
     }
 }
