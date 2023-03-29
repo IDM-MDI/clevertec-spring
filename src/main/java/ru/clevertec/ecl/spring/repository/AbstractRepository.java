@@ -1,5 +1,6 @@
 package ru.clevertec.ecl.spring.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.flywaydb.core.internal.jdbc.RowMapper;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,8 +19,12 @@ import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_FIELDS_EX
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_SQL_EXCEPTION;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_REPOSITORY_EXCEPTION;
 
-public interface AbstractRepository {
-    static <T> T update(JdbcTemplate template, String query, Supplier<T> returnValue, Object... args) {
+@RequiredArgsConstructor
+public abstract class AbstractRepository<T> {
+    private final JdbcTemplate template;
+    private final SimpleJdbcInsert jdbcInsert;
+    private final RowMapper<T> rowMapper;
+    protected T update(String query, Supplier<T> returnValue, Object... args) {
         try {
             template.execute(query, args);
             return returnValue.get();
@@ -31,12 +36,12 @@ public interface AbstractRepository {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-    static <T> Optional<T> findByID(JdbcTemplate template, String query, RowMapper<T> rowMapper, String value) {
-        return findByColumn(template, query, rowMapper, value)
+    protected Optional<T> findOneByColumn(String query, String value) {
+        return findByColumn(query, value)
                 .stream()
                 .findFirst();
     }
-    static <T> List<T> findByColumn(JdbcTemplate template, String query, RowMapper<T> rowMapper, String value) {
+    protected List<T> findByColumn(String query, String value) {
         try {
             return template.query(query, rowMapper, value);
         } catch (SQLException e) {
@@ -45,7 +50,7 @@ public interface AbstractRepository {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-    static  <T> List<T> findEntities(JdbcTemplate template, String query, RowMapper<T> rowMapper) {
+    protected List<T> findEntities(String query) {
         try {
             return template.query(query, rowMapper);
         } catch (SQLException e) {
@@ -54,7 +59,7 @@ public interface AbstractRepository {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-    static <T> List<T> findEntitiesByPage(JdbcTemplate template, RowMapper<T> rowMapper, String query, int size, int page) {
+    protected List<T> findEntitiesByPage(String query, int size, int page) {
         try {
             return template.query(query, rowMapper, size, page);
         } catch (SQLException e) {
@@ -63,7 +68,7 @@ public interface AbstractRepository {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-    static <T> T save(SimpleJdbcInsert jdbcInsert, Map<String, Object> insertMap, Function<Number,T> returnValue) {
+    protected T save(Map<String, Object> insertMap, Function<Number,T> returnValue) {
         try {
             return returnValue.apply(jdbcInsert.executeAndReturnKey(new MapSqlParameterSource(insertMap)));
         } catch (DataIntegrityViolationException e) {

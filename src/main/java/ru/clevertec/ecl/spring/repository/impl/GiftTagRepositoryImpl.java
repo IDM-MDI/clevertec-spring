@@ -20,18 +20,15 @@ import static ru.clevertec.ecl.spring.repository.handler.GiftTagHandler.createIn
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
 
 @Repository
-public class GiftTagRepositoryImpl implements GiftTagRepository {
-    private final JdbcTemplate template;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final GiftTagRowMapper rowMapper;
-
+public class GiftTagRepositoryImpl extends AbstractRepository<GiftTag> implements GiftTagRepository {
     @Autowired
     public GiftTagRepositoryImpl(JdbcTemplate template, GiftTagRowMapper rowMapper, DataSource source) {
-        this.template = template;
-        this.rowMapper = rowMapper;
-        jdbcInsert = new SimpleJdbcInsert(source)
-                .withTableName(GIFT_TAG)
-                .usingGeneratedKeyColumns(ID);
+        super(
+                template,
+                new SimpleJdbcInsert(source)
+                        .withTableName(GIFT_TAG)
+                        .usingGeneratedKeyColumns(ID),
+                rowMapper);
     }
 
     @Override
@@ -41,8 +38,7 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
 
     @Override
     public void save(GiftTag relation) {
-        AbstractRepository
-                .save(jdbcInsert, createInsertMap(relation), number -> null);
+        super.save(createInsertMap(relation), number -> null);
     }
 
     @Override
@@ -56,7 +52,7 @@ public class GiftTagRepositoryImpl implements GiftTagRepository {
     }
 
     private List<GiftTag> findByColumn(long id, String column) {
-        return AbstractRepository
-                .findByColumn(template,findAllByColumn(GIFT_TAG, column), rowMapper, String.valueOf(id));
+        return super
+                .findByColumn(findAllByColumn(GIFT_TAG, column), String.valueOf(id));
     }
 }

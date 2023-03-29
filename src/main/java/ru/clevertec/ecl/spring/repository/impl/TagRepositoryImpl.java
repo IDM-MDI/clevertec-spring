@@ -22,9 +22,6 @@ import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.entity.TableName.TAG;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
-import static ru.clevertec.ecl.spring.repository.AbstractRepository.findByID;
-import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntities;
-import static ru.clevertec.ecl.spring.repository.AbstractRepository.findEntitiesByPage;
 import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createInsertMap;
 import static ru.clevertec.ecl.spring.repository.handler.TagHandler.createSearchQuery;
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
@@ -32,39 +29,36 @@ import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByPage;
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.updateByOneColumn;
 
 @Repository
-public class TagRepositoryImpl implements TagRepository {
-    private final JdbcTemplate template;
-    private final SimpleJdbcInsert jdbcInsert;
-    private final TagRowMapper rowMapper;
-
+public class TagRepositoryImpl extends AbstractRepository<Tag> implements TagRepository {
     @Autowired
     public TagRepositoryImpl(JdbcTemplate template, TagRowMapper rowMapper, DataSource dataSource) {
-        this.template = template;
-        this.rowMapper = rowMapper;
-        jdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withTableName(TAG)
-                .usingGeneratedKeyColumns(ID);
+        super(
+                template,
+                new SimpleJdbcInsert(dataSource)
+                        .withTableName(TAG)
+                        .usingGeneratedKeyColumns(ID),
+                rowMapper
+        );
     }
 
     @Override
     public List<Tag> findTags(@NotNull PageFilter page) {
-        return findEntitiesByPage(template, rowMapper, findAllByPage(TAG, page.getFilter(), page.getDirection()), page.getSize(), page.getNumber());
+        return findEntitiesByPage(findAllByPage(TAG, page.getFilter(), page.getDirection()), page.getSize(), page.getNumber());
     }
 
     @Override
     public List<Tag> findTags(Tag tag) {
-        return findEntities(template, createSearchQuery(tag), rowMapper);
+        return findEntities(createSearchQuery(tag));
     }
 
     @Override
     public Optional<Tag> findTag(long id) {
-        return findByID(template, findAllByColumn(TAG, ID), rowMapper, String.valueOf(id));
+        return findOneByColumn(findAllByColumn(TAG, ID), String.valueOf(id));
     }
 
     @Override
     public Tag save(Tag tag) {
-        return AbstractRepository.save(
-                jdbcInsert,
+        return super.save(
                 createInsertMap(tag),
                 number -> findTag(number.longValue())
                         .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()))
@@ -73,16 +67,14 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag update(Tag tag, long id) {
-        return AbstractRepository.update(
-                template,
+        return super.update(
                 updateByOneColumn(TAG, NAME, ID),
                 () -> findTag(id).orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString())),
                 tag.getName(), String.valueOf(id));
     }
     @Override
     public void delete(long id) {
-        AbstractRepository.update(
-                template,
+        super.update(
                 updateByOneColumn(TAG, STATUS, ID),
                 () -> null,
                 DELETED, String.valueOf(id));
