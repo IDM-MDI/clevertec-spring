@@ -15,5 +15,4 @@ public class ColumnName {
     public static final String STATUS = "status";
     public static final String GIFT_ID = "gift_id";
     public static final String TAG_ID = "tag_id";
-    public static final String DELETED = "deleted";
 }

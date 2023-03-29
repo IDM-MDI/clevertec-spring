@@ -22,6 +22,7 @@ import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.ColumnName.UPDATE_DATE;
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.entity.TableName.GIFT_CERTIFICATE;
+import static ru.clevertec.ecl.spring.repository.handler.TagHandler.defaultSearchQuery;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GiftCertificateHandler {
@@ -37,15 +38,13 @@ public class GiftCertificateHandler {
         return parameters;
     }
     public static String createSearchQuery(GiftCertificate certificate) {
-        SearchQueryBuilder builder = new SearchQueryBuilder(GIFT_CERTIFICATE);
-        if(certificate.getId() > 0) {
-            builder.appendColumn(ID).appendValue(String.valueOf(certificate.getId()));
-        }
-        if(StringUtils.isNotBlank(certificate.getName())) {
-            builder.appendLowerColumn(NAME).appendStringValue(certificate.getName().toLowerCase());
-        }
+        SearchQueryBuilder builder = defaultSearchQuery(
+                GIFT_CERTIFICATE,
+                certificate.getId(),
+                certificate.getName(),
+                certificate.getStatus());
         if(StringUtils.isNotBlank(certificate.getDescription())) {
-            builder.appendLowerColumn(DESCRIPTION).appendStringValue(certificate.getName().toLowerCase());
+            builder.appendLowerColumn(DESCRIPTION).appendStringValue(certificate.getDescription().toLowerCase());
         }
         if(Objects.nonNull(certificate.getPrice())) {
             builder.appendColumn(PRICE).appendValue(String.valueOf(certificate.getPrice()));
@@ -64,6 +63,9 @@ public class GiftCertificateHandler {
         }
         return builder.build();
     }
+
+
+
     public static String createUpdateQuery(GiftCertificate certificate) {
         UpdateQueryBuilder builder = new UpdateQueryBuilder(GIFT_CERTIFICATE);
         if(StringUtils.isNotBlank(certificate.getName())) {

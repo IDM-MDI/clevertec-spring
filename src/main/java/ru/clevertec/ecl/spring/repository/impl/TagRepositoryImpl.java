@@ -16,10 +16,10 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.clevertec.ecl.spring.entity.ColumnName.DELETED;
 import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
 import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.entity.TableName.TAG;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
 import static ru.clevertec.ecl.spring.repository.RepositoryExceptionMethods.findByID;

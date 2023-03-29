@@ -6,11 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.GiftTag;
+import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
@@ -78,7 +78,7 @@ class GiftTagRepositoryImplTest {
                     .tagID(1)
                     .build();
             Assertions.assertThatThrownBy(() -> repository.save(relation))
-                    .isInstanceOf(DuplicateKeyException.class);
+                    .isInstanceOf(RepositoryException.class);
         }
     }
     @Nested

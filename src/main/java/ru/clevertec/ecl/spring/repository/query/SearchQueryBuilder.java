@@ -30,7 +30,7 @@ public class SearchQueryBuilder {
         return this;
     }
     public SearchQueryBuilder appendStringValue(String value) {
-        builder.append(String.format(LIKE_STRING,value));
+        builder.append(String.format(LIKE_STRING,"%" + value + "%"));
         return this;
     }
     public void clear() {

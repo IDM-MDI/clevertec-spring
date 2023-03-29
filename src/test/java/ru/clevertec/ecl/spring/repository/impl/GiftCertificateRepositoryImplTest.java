@@ -45,13 +45,13 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class FindByPage {
         @Test
-        void findTagsByPageShouldReturnCorrectList() {
+        void findGiftsByPageShouldReturnCorrectList() {
             List<GiftCertificate> result = repository.findGifts(page);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
-        void findTagsByPageShouldReturnEmptyList() {
+        void findGiftsByPageShouldReturnEmptyList() {
             page.setNumber(100);
             List<GiftCertificate> result = repository.findGifts(page);
             Assertions.assertThat(result)
@@ -59,18 +59,18 @@ class GiftCertificateRepositoryImplTest {
         }
     }
     @Nested
-    class FindByTag {
+    class FindByGift {
         @Test
-        void findTagsByTagShouldReturnCorrectList() {
+        void findGiftsByGiftShouldReturnCorrectList() {
             GiftCertificate gift = GiftCertificate.builder()
-                    .name("Amazon")
+                    .description("gift card")
                     .build();
             List<GiftCertificate> result = repository.findGifts(gift);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
-        void findTagsByTagShouldReturnEmptyList() {
+        void findGiftsByGiftShouldReturnEmptyList() {
             GiftCertificate certificate = GiftCertificate.builder()
                     .id(100L)
                     .build();
@@ -82,13 +82,13 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class FindByID {
         @Test
-        void findTagByIDShouldReturnPresentValue() {
+        void findGiftByIDShouldReturnPresentValue() {
             Optional<GiftCertificate> result = repository.findGift(1L);
             Assertions.assertThat(result)
                     .isPresent();
         }
         @Test
-        void findTagByIDShouldReturnEmptyValue() {
+        void findGiftByIDShouldReturnEmptyValue() {
             Optional<GiftCertificate> result = repository.findGift(0L);
             Assertions.assertThat(result)
                     .isNotPresent();
@@ -99,8 +99,8 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class Save {
         @Test
-        void saveShouldReturnSavedTag() {
-            String exceptionName = "Test tag";
+        void saveShouldReturnSavedGift() {
+            String exceptionName = "Test Gift";
             GiftCertificate result = repository.save(
                     GiftCertificate.builder()
                             .name(exceptionName)
@@ -134,7 +134,7 @@ class GiftCertificateRepositoryImplTest {
     @Nested
     class Update {
         @Test
-        void updateShouldReturnUpdatedTag() {
+        void updateShouldReturnUpdatedGift() {
             GiftCertificate expected = GiftCertificate.builder()
                     .id(1L)
                     .name("test")

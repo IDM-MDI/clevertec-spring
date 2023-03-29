@@ -25,16 +25,19 @@ public class TagHandler {
     }
 
     public static String createSearchQuery(Tag tag) {
-        SearchQueryBuilder builder = new SearchQueryBuilder(TAG);
-        if(tag.getId() > 0) {
-            builder.appendColumn(ID).appendValue(String.valueOf(tag.getId()));
+        return defaultSearchQuery(TAG, tag.getId(), tag.getName(), tag.getStatus()).build();
+    }
+    public static SearchQueryBuilder defaultSearchQuery(String table, long id, String name, String status) {
+        SearchQueryBuilder builder = new SearchQueryBuilder(table);
+        if(id > 0) {
+            builder.appendColumn(ID).appendValue(String.valueOf(id));
         }
-        if(StringUtils.isNotBlank(tag.getName())) {
-            builder.appendLowerColumn(NAME).appendStringValue(tag.getName().toLowerCase());
+        if(StringUtils.isNotBlank(name)) {
+            builder.appendLowerColumn(NAME).appendStringValue(name.toLowerCase());
         }
-        if(StringUtils.isNotBlank(tag.getStatus())) {
-            builder.appendLowerColumn(STATUS).appendStringValue(tag.getStatus().toLowerCase());
+        if(StringUtils.isNotBlank(status)) {
+            builder.appendLowerColumn(STATUS).appendStringValue(status.toLowerCase());
         }
-        return builder.build();
+        return builder;
     }
 }
