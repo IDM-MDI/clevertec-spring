@@ -3,6 +3,7 @@ package ru.clevertec.ecl.spring.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
@@ -28,6 +29,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private final GiftTagService giftTagService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<GiftCertificateDTO> findGifts(PageFilter page) {
         List<GiftCertificateDTO> gifts = repository.findGifts(page)
                 .stream()
@@ -38,6 +40,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
         List<GiftCertificate> byGift = repository.findGifts(mapper.toEntity(gift));
         byGift = StringUtils.isNotBlank(tag) ? searchByTag(byGift,tag) : byGift;
@@ -45,6 +48,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public GiftCertificateDTO findGift(long id) {
         GiftCertificateDTO gift = repository.findGift(id)
                 .map(mapper::toModel)
@@ -54,6 +58,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public GiftCertificateDTO save(GiftCertificateDTO gift) {
         GiftCertificateDTO saved = mapper.toModel(repository.save(mapper.toEntity(gift)));
         saveTagRelation(gift, saved);
@@ -61,6 +66,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public GiftCertificateDTO update(GiftCertificateDTO gift, long id) {
         GiftCertificateDTO updated = mapper.toModel(repository.update(mapper.toEntity(gift), id));
         saveTagRelation(gift, updated);
@@ -68,6 +74,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void delete(long id) {
         findGift(id);
         repository.delete(id);
