@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
+import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
@@ -40,38 +40,14 @@ class TagServiceImplTest {
     void setup() {
         page = new PageFilter();
         entities = List.of(
-                Tag.builder()
-                        .id(1L)
-                        .name("tag1")
-                        .status(ACTIVE)
-                        .build(),
-                Tag.builder()
-                        .id(2L)
-                        .name("tag2")
-                        .status(ACTIVE)
-                        .build(),
-                Tag.builder()
-                        .id(3L)
-                        .name("tag3")
-                        .status(ACTIVE)
-                        .build()
+                aTag().buildToEntity(),
+                aTag().setId(2).buildToEntity(),
+                aTag().setId(3).buildToEntity()
         );
         models = List.of(
-                TagDTO.builder()
-                        .id(1L)
-                        .name("tag1")
-                        .status(ACTIVE)
-                        .build(),
-                TagDTO.builder()
-                        .id(2L)
-                        .name("tag2")
-                        .status(ACTIVE)
-                        .build(),
-                TagDTO.builder()
-                        .id(3L)
-                        .name("tag3")
-                        .status(ACTIVE)
-                        .build()
+                aTag().buildToModel(),
+                aTag().setId(2).buildToModel(),
+                aTag().setId(3).buildToModel()
         );
     }
 

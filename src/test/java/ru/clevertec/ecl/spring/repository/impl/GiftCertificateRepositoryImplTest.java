@@ -14,11 +14,11 @@ import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
 class GiftCertificateRepositoryImplTest {
@@ -71,9 +71,7 @@ class GiftCertificateRepositoryImplTest {
         }
         @Test
         void findGiftsByGiftShouldReturnEmptyList() {
-            GiftCertificate certificate = GiftCertificate.builder()
-                    .id(100L)
-                    .build();
+            GiftCertificate certificate = aGift().buildToEntity();
             List<GiftCertificate> result = repository.findGifts(certificate);
             Assertions.assertThat(result)
                     .isEmpty();
@@ -101,14 +99,7 @@ class GiftCertificateRepositoryImplTest {
         @Test
         void saveShouldReturnSavedGift() {
             String exceptionName = "Test Gift";
-            GiftCertificate result = repository.save(
-                    GiftCertificate.builder()
-                            .name(exceptionName)
-                            .description("test description")
-                            .price(new BigDecimal(100))
-                            .duration(100)
-                            .build()
-            );
+            GiftCertificate result = repository.save(aGift().setName(exceptionName).buildToEntity());
             Assertions.assertThat(result.getName())
                     .isEqualTo(exceptionName);
         }
@@ -120,12 +111,10 @@ class GiftCertificateRepositoryImplTest {
         @Test
         void saveShouldThrowSQLException() {
             Assertions.assertThatThrownBy(() -> repository.save(
-                            GiftCertificate.builder()
-                                    .name(MORE_THAN_255)
-                                    .description("test description")
-                                    .price(new BigDecimal(100))
-                                    .duration(100)
-                                    .build()
+                            aGift()
+                                    .setId(0)
+                                    .setName(MORE_THAN_255)
+                                    .buildToEntity()
                     ))
                     .isInstanceOf(RepositoryException.class);
         }
@@ -135,10 +124,7 @@ class GiftCertificateRepositoryImplTest {
     class Update {
         @Test
         void updateShouldReturnUpdatedGift() {
-            GiftCertificate expected = GiftCertificate.builder()
-                    .id(1L)
-                    .name("test")
-                    .build();
+            GiftCertificate expected = aGift().setName("test").buildToEntity();
             GiftCertificate result = repository.update(expected,expected.getId());
             Assertions.assertThat(result.getName())
                     .isEqualTo(expected.getName());

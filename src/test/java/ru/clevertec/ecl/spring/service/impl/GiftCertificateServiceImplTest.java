@@ -27,6 +27,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
+import static ru.clevertec.ecl.spring.builder.impl.GiftTagBuilder.aGiftTag;
+import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
 import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,81 +54,24 @@ class GiftCertificateServiceImplTest {
     void setup() {
         page = new PageFilter();
         entities = List.of(
-                GiftCertificate.builder()
-                        .id(1L)
-                        .name("test1")
-                        .duration(100)
-                        .description("some random description")
-                        .price(new BigDecimal(100))
-                        .build(),
-                GiftCertificate.builder()
-                        .id(2L)
-                        .name("test2")
-                        .duration(100)
-                        .description("some random description")
-                        .price(new BigDecimal(100))
-                        .build(),
-                GiftCertificate.builder()
-                        .id(2L)
-                        .name("test2")
-                        .duration(100)
-                        .description("some random description")
-                        .price(new BigDecimal(100))
-                        .build()
+                aGift().buildToEntity(),
+                aGift().setId(2).buildToEntity(),
+                aGift().setId(3).buildToEntity()
         );
         models = List.of(
-                GiftCertificateDTO.builder()
-                        .id(1L)
-                        .name("test1")
-                        .duration(100)
-                        .description("some random description")
-                        .price(100D)
-                        .build(),
-                GiftCertificateDTO.builder()
-                        .id(2L)
-                        .name("test2")
-                        .duration(100)
-                        .description("some random description")
-                        .price(100D)
-                        .build(),
-                GiftCertificateDTO.builder()
-                        .id(2L)
-                        .name("test2")
-                        .duration(100)
-                        .description("some random description")
-                        .price(100D)
-                        .build()
+                aGift().buildToModel(),
+                aGift().setId(2).buildToModel(),
+                aGift().setId(3).buildToModel()
         );
         tags = List.of(
-                TagDTO.builder()
-                        .id(1L)
-                        .name("tag1")
-                        .status(ACTIVE)
-                        .build(),
-                TagDTO.builder()
-                        .id(2L)
-                        .name("tag2")
-                        .status(ACTIVE)
-                        .build(),
-                TagDTO.builder()
-                        .id(3L)
-                        .name("tag3")
-                        .status(ACTIVE)
-                        .build()
+                aTag().buildToModel(),
+                aTag().setId(2).buildToModel(),
+                aTag().setId(3).buildToModel()
         );
         relations = List.of(
-                GiftTag.builder()
-                        .giftID(1L)
-                        .tagID(1L)
-                        .build(),
-                GiftTag.builder()
-                        .giftID(1L)
-                        .tagID(2L)
-                        .build(),
-                GiftTag.builder()
-                        .giftID(1L)
-                        .tagID(3L)
-                        .build()
+                aGiftTag().buildToEntity(),
+                aGiftTag().setTagID(2).buildToEntity(),
+                aGiftTag().setTagID(3).buildToEntity()
         );
     }
     @Nested

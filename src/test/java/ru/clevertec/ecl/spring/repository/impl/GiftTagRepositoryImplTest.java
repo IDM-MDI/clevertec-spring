@@ -18,6 +18,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.clevertec.ecl.spring.builder.impl.GiftTagBuilder.aGiftTag;
+
 class GiftTagRepositoryImplTest {
     private GiftTagRepository repository;
     private EmbeddedDatabase db;
@@ -42,14 +44,8 @@ class GiftTagRepositoryImplTest {
         @Test
         void saveAllShouldSaveListOfRelation() {
             List<GiftTag> relations = List.of(
-                    GiftTag.builder()
-                            .giftID(1)
-                            .tagID(3)
-                            .build(),
-                    GiftTag.builder()
-                            .giftID(1)
-                            .tagID(4)
-                            .build()
+                    aGiftTag().setTagID(3).buildToEntity(),
+                    aGiftTag().setTagID(4).buildToEntity()
             );
             repository.saveAll(relations);
             List<GiftTag> result = repository.findByGift(1).stream()
@@ -60,10 +56,7 @@ class GiftTagRepositoryImplTest {
         }
         @Test
         void saveShouldSaveRelation() {
-            GiftTag relation = GiftTag.builder()
-                    .giftID(1)
-                    .tagID(5)
-                    .build();
+            GiftTag relation = aGiftTag().setTagID(5).buildToEntity();
             repository.save(relation);
             Optional<GiftTag> result = repository.findByGift(1).stream()
                     .filter(giftTag -> giftTag.getTagID() == 5)
@@ -73,10 +66,7 @@ class GiftTagRepositoryImplTest {
         }
         @Test
         void saveShouldThrowSQLException() {
-            GiftTag relation = GiftTag.builder()
-                    .giftID(1)
-                    .tagID(1)
-                    .build();
+            GiftTag relation = aGiftTag().buildToEntity();
             Assertions.assertThatThrownBy(() -> repository.save(relation))
                     .isInstanceOf(RepositoryException.class);
         }

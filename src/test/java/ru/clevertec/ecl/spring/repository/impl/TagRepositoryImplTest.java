@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
+import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
 class TagRepositoryImplTest {
@@ -62,18 +62,18 @@ class TagRepositoryImplTest {
     class FindByTag {
         @Test
         void findTagsByTagShouldReturnCorrectList() {
-            Tag tag = Tag.builder()
-                    .name("Entertainment")
-                    .build();
+            Tag tag = aTag()
+                    .setName("Entertainment")
+                    .buildToEntity();
             List<Tag> result = repository.findTags(tag);
             Assertions.assertThat(result)
                     .isNotEmpty();
         }
         @Test
         void findTagsByTagShouldReturnEmptyList() {
-            Tag tag = Tag.builder()
-                    .id(100L)
-                    .build();
+            Tag tag = aTag()
+                    .setId(100)
+                    .buildToEntity();
             List<Tag> result = repository.findTags(tag);
             Assertions.assertThat(result)
                     .isEmpty();
@@ -102,9 +102,9 @@ class TagRepositoryImplTest {
         void saveShouldReturnSavedTag() {
             String exceptionName = "Test tag";
             Tag result = repository.save(
-                    Tag.builder()
-                            .name(exceptionName)
-                            .build()
+                    aTag()
+                            .setName(exceptionName)
+                            .buildToEntity()
             );
             Assertions.assertThat(result.getName())
                     .isEqualTo(exceptionName);
@@ -120,11 +120,7 @@ class TagRepositoryImplTest {
     class Update {
         @Test
         void updateShouldReturnUpdatedTag() {
-            Tag expected = Tag.builder()
-                    .id(1L)
-                    .name("test")
-                    .status(ACTIVE)
-                    .build();
+            Tag expected = aTag().buildToEntity();
             Tag result = repository.update(expected,expected.getId());
             Assertions.assertThat(result)
                     .isEqualTo(expected);

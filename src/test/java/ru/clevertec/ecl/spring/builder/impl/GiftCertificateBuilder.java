@@ -27,14 +27,38 @@ public class GiftCertificateBuilder implements TestEntityBuilder<GiftCertificate
             aTag().setId(3).buildToModel()
     );
     private String status = ACTIVE;
+
+    private GiftCertificateBuilder() {}
+
+    public static GiftCertificateBuilder aGift() {
+        return new GiftCertificateBuilder();
+    }
     @Override
     public GiftCertificate buildToEntity() {
-        return null;
+        return GiftCertificate.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .price(price)
+                .duration(duration)
+                .createDate(createDate)
+                .updateDate(updateDate)
+                .status(status)
+                .build();
     }
 
     @Override
     public GiftCertificateDTO buildToModel() {
-        return null;
+        return GiftCertificateDTO.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .price(price.doubleValue())
+                .duration(duration)
+                .createDate(createDate.toString())
+                .updateDate(updateDate.toString())
+                .status(status)
+                .build();
     }
 
     public GiftCertificateBuilder setId(long id) {
