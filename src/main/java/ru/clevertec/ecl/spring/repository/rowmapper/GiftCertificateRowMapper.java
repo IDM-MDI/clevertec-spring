@@ -11,10 +11,10 @@ import static ru.clevertec.ecl.spring.entity.ColumnName.CREATE_DATE;
 import static ru.clevertec.ecl.spring.entity.ColumnName.DESCRIPTION;
 import static ru.clevertec.ecl.spring.entity.ColumnName.DURATION;
 import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
-import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
-import static ru.clevertec.ecl.spring.entity.ColumnName.UPDATE_DATE;
 import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.entity.ColumnName.PRICE;
+import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
+import static ru.clevertec.ecl.spring.entity.ColumnName.UPDATE_DATE;
 
 @Component
 public class GiftCertificateRowMapper implements RowMapper<GiftCertificate> {

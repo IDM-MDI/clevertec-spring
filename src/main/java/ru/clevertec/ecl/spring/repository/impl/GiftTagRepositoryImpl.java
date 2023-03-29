@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftTag;
-import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.repository.AbstractRepository;
+import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
 import javax.sql.DataSource;

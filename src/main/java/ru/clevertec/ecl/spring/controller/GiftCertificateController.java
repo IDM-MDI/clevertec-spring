@@ -2,7 +2,6 @@ package ru.clevertec.ecl.spring.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.model.PageFilter;
@@ -28,7 +26,7 @@ import java.util.List;
 public class GiftCertificateController {
     private final GiftCertificateService service;
     @GetMapping
-    public List<GiftCertificateDTO> findGifts(PageFilter page) {
+    public List<GiftCertificateDTO> findGifts(@Valid PageFilter page) {
         return service.findGifts(page);
     }
     @GetMapping("/{id}")
