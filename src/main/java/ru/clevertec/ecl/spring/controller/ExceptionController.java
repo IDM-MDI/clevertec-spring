@@ -40,7 +40,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<String> handleMethodArgumentException(MethodArgumentNotValidException exception) {
+    public ResponseEntity<String> handleMethodArgumentException() {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,28 +49,28 @@ public class ExceptionController {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<String> handleNoHandlerFoundException(NoHandlerFoundException exception) {
+    public ResponseEntity<String> handleNoHandlerFoundException() {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(METHOD_NOT_FOUND.toString());
     }
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<String> handleMethodNotSupportException(HttpRequestMethodNotSupportedException exception) {
+    public ResponseEntity<String> handleMethodNotSupportException() {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(REQUEST_NOT_VALID.toString());
     }
     @ExceptionHandler(NoSuchMethodException.class)
-    public ResponseEntity<String> handleNotFoundException(NoSuchMethodException exception) {
+    public ResponseEntity<String> handleNotFoundException() {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(METHOD_NOT_FOUND.toString());
     }
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintException(ConstraintViolationException exception) {
+    public ResponseEntity<String> handleConstraintException() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
