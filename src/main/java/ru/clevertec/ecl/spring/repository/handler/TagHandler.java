@@ -8,6 +8,7 @@ import ru.clevertec.ecl.spring.repository.query.SearchQueryBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
 import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
@@ -27,9 +28,9 @@ public class TagHandler {
     public static String createSearchQuery(Tag tag) {
         return defaultSearchQuery(TAG, tag.getId(), tag.getName(), tag.getStatus()).build();
     }
-    public static SearchQueryBuilder defaultSearchQuery(String table, long id, String name, String status) {
+    public static SearchQueryBuilder defaultSearchQuery(String table, Long id, String name, String status) {
         SearchQueryBuilder builder = new SearchQueryBuilder(table);
-        if(id > 0) {
+        if(Objects.nonNull(id) && id > 0) {
             builder.appendColumn(ID).appendValue(String.valueOf(id));
         }
         if(StringUtils.isNotBlank(name)) {

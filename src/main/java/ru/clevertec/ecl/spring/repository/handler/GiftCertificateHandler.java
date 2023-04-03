@@ -49,7 +49,7 @@ public class GiftCertificateHandler {
         if(Objects.nonNull(certificate.getPrice())) {
             builder.appendColumn(PRICE).appendValue(String.valueOf(certificate.getPrice()));
         }
-        if(certificate.getDuration() > 0) {
+        if(Objects.nonNull(certificate.getDuration()) && certificate.getDuration() > 0) {
             builder.appendColumn(DURATION).appendValue(String.valueOf(certificate.getDuration()));
         }
         if(Objects.nonNull(certificate.getCreateDate())) {
