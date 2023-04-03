@@ -2,41 +2,44 @@ package ru.clevertec.ecl.spring.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.Objects;
+
+@Entity(name = "tag")
+@Getter
+@Setter
 @Builder
-@EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private long id;
+public class Tag implements BaseEntity<Long> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;
+    @Column(name = "status", nullable = false)
     private String status;
 
-    public long getId() {
-        return this.id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return Objects.equals(id, tag.id) && Objects.equals(name, tag.name) && Objects.equals(status, tag.status);
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, status);
     }
 }
