@@ -1,41 +1,29 @@
 package ru.clevertec.ecl.spring.repository.impl;
 
-import org.flywaydb.core.internal.jdbc.JdbcTemplate;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.AbstractRepository;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
-import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
+import ru.clevertec.ecl.spring.util.HibernateUtil;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.clevertec.ecl.spring.entity.ColumnName.ID;
-import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 import static ru.clevertec.ecl.spring.entity.TableName.GIFT_CERTIFICATE;
 import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
-import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createInsertMap;
 import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createSearchQuery;
-import static ru.clevertec.ecl.spring.repository.handler.GiftCertificateHandler.createUpdateQuery;
-import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByColumn;
 import static ru.clevertec.ecl.spring.repository.query.SQLQuery.findAllByPage;
-import static ru.clevertec.ecl.spring.repository.query.SQLQuery.updateByOneColumn;
 
 @Repository
 public class GiftCertificateRepositoryImpl extends AbstractRepository<GiftCertificate> implements GiftCertificateRepository {
     @Autowired
-    public GiftCertificateRepositoryImpl(JdbcTemplate template, GiftCertificateRowMapper rowMapper, DataSource source) {
-        super(template,
-                new SimpleJdbcInsert(source)
-                        .withTableName(GIFT_CERTIFICATE)
-                        .usingGeneratedKeyColumns(ID),
-                rowMapper);
+    public GiftCertificateRepositoryImpl(SessionFactory factory) {
+        super(factory);
     }
 
     @Override
@@ -45,38 +33,38 @@ public class GiftCertificateRepositoryImpl extends AbstractRepository<GiftCertif
 
     @Override
     public List<GiftCertificate> findGifts(GiftCertificate certificate) {
-        return findEntities(createSearchQuery(certificate));
+        return findEntities(createSearchQuery(certificate), GiftCertificate.class);
     }
 
     @Override
     public Optional<GiftCertificate> findGift(long id) {
-        return findOneByColumn(findAllByColumn(GIFT_CERTIFICATE, ID), String.valueOf(id));
+        return Optional.ofNullable(findByID(GiftCertificate.class, id));
     }
 
     @Override
     public GiftCertificate save(GiftCertificate certificate)  {
-        return super.save(
-                createInsertMap(certificate),
-                number -> findGift(number.longValue())
+        return super.executeTransaction(
+                session -> findGift((Long) session.save(certificate))
                         .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()))
         );
     }
 
     @Override
     public GiftCertificate update(GiftCertificate certificate, long id) {
-        return super.update(
-                createUpdateQuery(certificate),
-                () -> findGift(id)
-                        .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString())),
-                String.valueOf(id)
+        certificate.setId(id);
+        return super.executeTransaction(
+                session -> {
+                    session.update(certificate);
+                    return findGift(id)
+                            .orElseThrow(() -> new RepositoryException(ENTITY_NOT_FOUND.toString()));
+                }
         );
     }
 
     @Override
     public void delete(long id) {
-        super.update(
-                updateByOneColumn(GIFT_CERTIFICATE, STATUS, ID),
-                () -> null,
-                DELETED, String.valueOf(id));
+        GiftCertificate byID = findByID(GiftCertificate.class, id);
+        byID.setStatus(DELETED);
+        update(byID, id);
     }
 }

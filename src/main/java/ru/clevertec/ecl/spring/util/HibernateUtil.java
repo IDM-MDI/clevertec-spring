@@ -1,20 +1,23 @@
 package ru.clevertec.ecl.spring.util;
 
 import lombok.experimental.UtilityClass;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.util.Objects;
 
 @UtilityClass
 public class HibernateUtil {
-    private static SessionFactory sessionFactory;
-    public SessionFactory getSessionFactory() {
-        if(Objects.isNull(sessionFactory)) {
-            sessionFactory = new Configuration()
-                    .configure()
-                    .buildSessionFactory();
+    public void closeSession(Session session) {
+        if(Objects.nonNull(session)) {
+            session.close();
         }
-        return sessionFactory;
+    }
+    public void rollbackTransactional(Transaction transaction) {
+        if(Objects.nonNull(transaction)) {
+            transaction.rollback();
+        }
     }
 }

@@ -61,13 +61,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> saveAll(List<TagDTO> tags) {
-        return tags.stream()
-                .map(this::save)
-                .toList();
-    }
-
-    @Override
     public void delete(long id) {
         repository.delete(id);
     }

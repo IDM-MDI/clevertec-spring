@@ -35,7 +35,7 @@ class TagRepositoryImplTest {
                 .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
                 .addScript("classpath:db/migration/dev/V1.0.2__InitTags.sql")
                 .build();
-        repository = new TagRepositoryImpl(new JdbcTemplate(db.getConnection()), new TagRowMapper(), db);
+        repository = new TagRepositoryImpl();
     }
 
     @AfterEach

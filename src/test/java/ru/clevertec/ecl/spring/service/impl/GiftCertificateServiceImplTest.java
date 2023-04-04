@@ -15,7 +15,6 @@ import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
-import ru.clevertec.ecl.spring.service.GiftTagService;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
 
@@ -39,8 +38,6 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateMapper mapper;
     @Mock
     private TagService tagService;
-    @Mock
-    private GiftTagService giftTagService;
     @InjectMocks
     private GiftCertificateServiceImpl service;
 

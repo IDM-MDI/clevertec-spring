@@ -12,7 +12,6 @@ public interface TagService {
     TagDTO findTag(long id);
     TagDTO save(TagDTO tag);
     TagDTO update(TagDTO tag,long id);
-    List<TagDTO> saveAll(List<TagDTO> tags);
 
     void delete(long id);
 }

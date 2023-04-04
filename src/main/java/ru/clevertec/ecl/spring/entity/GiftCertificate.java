@@ -40,7 +40,7 @@ public class GiftCertificate implements BaseEntity<Long> {
     @Column(name = "duration", nullable = false)
     private Long duration;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "gift_tag",
             joinColumns = @JoinColumn(name = "gift_id"),

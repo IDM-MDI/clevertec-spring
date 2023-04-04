@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import ru.clevertec.ecl.spring.util.HibernateUtil;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -21,9 +20,15 @@ import java.util.Map;
 public class RepositoryConfig {
     @Value("${flyway.path}")
     private String flywayPath;
+
+    @Bean
+    public SessionFactory getSessionFactory(){
+        return new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
+    }
+
     @Bean
     public DataSource dataSource() {
-        try (SessionFactory factory = HibernateUtil.getSessionFactory()){
+        try (SessionFactory factory = getSessionFactory()){
             Map<String, Object> properties = factory.getProperties();
             BasicDataSource dataSource = new BasicDataSource();
             dataSource.setDriverClassName(properties.get("hibernate.connection.driver_class").toString());

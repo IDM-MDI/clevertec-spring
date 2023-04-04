@@ -35,7 +35,7 @@ class GiftCertificateRepositoryImplTest {
                 .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
                 .addScript("classpath:db/migration/dev/V1.0.1__InitGifts.sql")
                 .build();
-        repository = new GiftCertificateRepositoryImpl(new JdbcTemplate(db.getConnection()), new GiftCertificateRowMapper(), db);
+        repository = new GiftCertificateRepositoryImpl();
     }
 
     @AfterEach
