@@ -1,26 +1,25 @@
 package ru.clevertec.ecl.spring.repository.impl;
 
 import org.assertj.core.api.Assertions;
-import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.spring.config.TestRepository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
-import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
+@Transactional
 class GiftCertificateRepositoryImplTest {
     private static final String MORE_THAN_255 = "asodkasdaslkjelksajdklasjeklasjdalskjdaksjdlaksjdasldjkaslkdjaskldjaslkdjaslkdjaslkdjasdlakjewklajsdlkajsdklasjdlkasdjaklsdjkasljdlkasjdlkajwelkajsldkjaslkdjaslkdjaslkdjalskdjaklsdjalksdjakljeklwajklasjdklasjdklasdjklasjdaklwjeklajsdlkasjdklajskldjasdasdasd";
     private GiftCertificateRepositoryImpl repository;
@@ -28,14 +27,10 @@ class GiftCertificateRepositoryImplTest {
     private PageFilter page;
 
     @BeforeEach
-    void setup() throws SQLException {
+    void setup() throws IOException {
         page = new PageFilter();
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
-                .addScript("classpath:db/migration/dev/V1.0.1__InitGifts.sql")
-                .build();
-        repository = new GiftCertificateRepositoryImpl();
+        db = TestRepository.embeddedDatabase();
+        repository = new GiftCertificateRepositoryImpl(TestRepository.sessionFactory(db));
     }
 
     @AfterEach
@@ -63,7 +58,7 @@ class GiftCertificateRepositoryImplTest {
         @Test
         void findGiftsByGiftShouldReturnCorrectList() {
             GiftCertificate gift = GiftCertificate.builder()
-                    .description("gift card")
+                    .description("This is a gift card for Amazon products")
                     .build();
             List<GiftCertificate> result = repository.findGifts(gift);
             Assertions.assertThat(result)
@@ -71,7 +66,9 @@ class GiftCertificateRepositoryImplTest {
         }
         @Test
         void findGiftsByGiftShouldReturnEmptyList() {
-            GiftCertificate certificate = aGift().buildToEntity();
+            GiftCertificate certificate = aGift().setCreateDate(null)
+                    .setUpdateDate(null)
+                    .buildToEntity();
             List<GiftCertificate> result = repository.findGifts(certificate);
             Assertions.assertThat(result)
                     .isEmpty();

@@ -3,11 +3,9 @@ package ru.clevertec.ecl.spring.repository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
-import ru.clevertec.ecl.spring.util.HibernateUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -36,18 +34,10 @@ public abstract class AbstractRepository<T> {
         }
     }
     protected T findByID(Class<T> type ,Serializable id) {
-        Session session = null;
-        try {
-            session = sessionFactory.openSession();
-            session.beginTransaction();
-            T result = session.get(type, id);
-            session.getTransaction().commit();
-            return result;
+        try(Session session = sessionFactory.openSession()) {
+            return session.get(type, id);
         } catch (Exception e) {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
-        }
-        finally {
-            HibernateUtil.closeSession(session);
         }
     }
 
@@ -67,37 +57,16 @@ public abstract class AbstractRepository<T> {
         }
     }
 
-    protected T save(T object, Function<Number,T> returnValue) {
+    protected T save(T object, Function<Serializable,T> returnValue) {
         try(Session session = sessionFactory.openSession()) {
             Serializable save = session.save(object);
-            return returnValue.apply((Long) save);
+            return returnValue.apply(save);
         } catch (DataIntegrityViolationException e) {
             throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
         } catch (Exception e) {
             throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
         }
     }
-
-    protected T executeTransaction(Function<Session, T> function) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = sessionFactory.openSession();
-            transaction = session.getTransaction();
-            T result = function.apply(session);
-            transaction.commit();
-            return result;
-        } catch (DataIntegrityViolationException e) {
-            HibernateUtil.rollbackTransactional(transaction);
-            throw new RepositoryException(ENTITY_FIELDS_EXCEPTION.toString());
-        } catch (Exception e) {
-            HibernateUtil.rollbackTransactional(transaction);
-            throw new RepositoryException(OTHER_REPOSITORY_EXCEPTION.toString());
-        } finally {
-            HibernateUtil.closeSession(session);
-        }
-    }
-
     private List<T> getListByPage(Session session, String query, int size, int page) {
         Query sessionQuery = session.createQuery(query);
         sessionQuery.setFirstResult(page);
@@ -105,14 +74,6 @@ public abstract class AbstractRepository<T> {
         return sessionQuery.list();
     }
 
-    private CriteriaQuery<T> getCriteriaQueryByOneColumn(String name, String value, Class<T> classType, Session session) {
-        CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<T> query = cb.createQuery(classType);
-        Root<T> root = query.from(classType);
-        query.select(root);
-        query.where(cb.equal(root.get(name), value));
-        return query;
-    }
     private CriteriaQuery<T> getCriteriaQuery(Map<String, String> map, Class<T> classType, Session session) {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<T> query = cb.createQuery(classType);

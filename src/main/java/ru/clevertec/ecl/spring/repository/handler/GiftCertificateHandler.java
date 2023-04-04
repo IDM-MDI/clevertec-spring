@@ -5,19 +5,15 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import static ru.clevertec.ecl.spring.entity.ColumnName.CREATE_DATE;
 import static ru.clevertec.ecl.spring.entity.ColumnName.DESCRIPTION;
 import static ru.clevertec.ecl.spring.entity.ColumnName.DURATION;
-import static ru.clevertec.ecl.spring.entity.ColumnName.NAME;
 import static ru.clevertec.ecl.spring.entity.ColumnName.PRICE;
 import static ru.clevertec.ecl.spring.entity.ColumnName.STATUS;
 import static ru.clevertec.ecl.spring.entity.ColumnName.UPDATE_DATE;
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 import static ru.clevertec.ecl.spring.repository.handler.TagHandler.defaultSearchQuery;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -28,7 +24,7 @@ public class GiftCertificateHandler {
                 certificate.getName(),
                 certificate.getStatus());
         if(StringUtils.isNotBlank(certificate.getDescription())) {
-            map.put(DESCRIPTION, certificate.getDescription().toLowerCase());
+            map.put(DESCRIPTION, certificate.getDescription());
         }
         if(Objects.nonNull(certificate.getPrice())) {
             map.put(PRICE, String.valueOf(certificate.getPrice()));
@@ -43,7 +39,7 @@ public class GiftCertificateHandler {
             map.put(UPDATE_DATE, certificate.getUpdateDate().toString());
         }
         if(StringUtils.isNotBlank(certificate.getStatus())) {
-            map.put(STATUS, certificate.getStatus().toLowerCase());
+            map.put(STATUS, certificate.getStatus());
         }
         return map;
     }

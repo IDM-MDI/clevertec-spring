@@ -2,40 +2,36 @@ package ru.clevertec.ecl.spring.repository.impl;
 
 
 import org.assertj.core.api.Assertions;
-import org.flywaydb.core.internal.jdbc.JdbcTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.ecl.spring.config.TestRepository;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.model.PageFilter;
-import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
+import ru.clevertec.ecl.spring.repository.TagRepository;
 
-import java.sql.SQLException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
 import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
 
+@Transactional
 class TagRepositoryImplTest {
-    private TagRepositoryImpl repository;
+    private TagRepository repository;
     private EmbeddedDatabase db;
     private PageFilter page;
 
     @BeforeEach
-    void setup() throws SQLException {
+    void setup() throws IOException {
+        db = TestRepository.embeddedDatabase();
+        repository = new TagRepositoryImpl(TestRepository.sessionFactory(db));
         page = new PageFilter();
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:db/migration/dev/V1.0.0__InitDB.sql")
-                .addScript("classpath:db/migration/dev/V1.0.2__InitTags.sql")
-                .build();
-        repository = new TagRepositoryImpl();
     }
 
     @AfterEach

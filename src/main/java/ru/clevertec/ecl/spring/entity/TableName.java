@@ -1,7 +1,10 @@
 package ru.clevertec.ecl.spring.entity;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TableName {
-    public static final String GIFT_CERTIFICATE = "gift_certificate";
-    public static final String TAG = "tag";
-    public static final String GIFT_TAG = "gift_tag";
+    public static final String HIBERNATE_GIFT_CERTIFICATE = "GiftCertificate";
+    public static final String HIBERNATE_TAG = "Tag";
 }

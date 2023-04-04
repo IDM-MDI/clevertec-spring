@@ -180,24 +180,6 @@ class TagServiceImplTest {
     }
 
     @Test
-    void saveAllShouldReturnModelList() {
-        doReturn(entities.get(0))
-                .when(mapper)
-                .toEntity(any(TagDTO.class));
-        doReturn(entities.get(0))
-                .when(repository)
-                .save(any(Tag.class));
-        doReturn(models.get(0))
-                .when(mapper)
-                .toModel(any(Tag.class));
-
-        List<TagDTO> result = service.saveAll(models);
-
-        Assertions.assertThat(result)
-                .isNotEmpty();
-    }
-
-    @Test
     void deleteShouldDeleteModel() {
         long id = 1;
         doNothing()

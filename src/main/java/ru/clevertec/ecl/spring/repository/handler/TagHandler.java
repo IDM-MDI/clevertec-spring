@@ -24,10 +24,10 @@ public class TagHandler {
             map.put(ID,String.valueOf(id));
         }
         if(StringUtils.isNotBlank(name)) {
-            map.put(NAME,name.toLowerCase());
+            map.put(NAME,name);
         }
         if(StringUtils.isNotBlank(status)) {
-            map.put(STATUS,status.toLowerCase());
+            map.put(STATUS,status);
         }
         return map;
     }

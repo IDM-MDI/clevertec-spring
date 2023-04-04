@@ -26,6 +26,7 @@ import java.util.Objects;
 public class Tag implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;

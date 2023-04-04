@@ -80,9 +80,6 @@ class GiftCertificateServiceImplTest {
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
                     .findTag(anyLong());
@@ -104,18 +101,12 @@ class GiftCertificateServiceImplTest {
             doReturn(tags.get(0))
                     .when(tagService)
                     .findTag(any(TagDTO.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByTag(anyLong());
             doReturn(Optional.of(entities.get(0)))
                     .when(repository)
                     .findGift(anyLong());
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
                     .findTag(anyLong());
@@ -140,9 +131,6 @@ class GiftCertificateServiceImplTest {
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
                     .findTag(anyLong());
@@ -163,9 +151,6 @@ class GiftCertificateServiceImplTest {
             doReturn(tags.get(0))
                     .when(tagService)
                     .findTag(anyLong());
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
 
             GiftCertificateDTO result = service.findGift(1L);
 
@@ -194,12 +179,6 @@ class GiftCertificateServiceImplTest {
         doReturn(models.get(0))
                 .when(mapper)
                 .toModel(entities.get(0));
-        doReturn(tags)
-                .when(tagService)
-                .saveAll(any());
-        doNothing()
-                .when(giftTagService)
-                .save(anyLong(),anyLong());
 
         GiftCertificateDTO result = service.save(models.get(0));
 
@@ -218,12 +197,6 @@ class GiftCertificateServiceImplTest {
         doReturn(models.get(0))
                 .when(mapper)
                 .toModel(entities.get(0));
-        doReturn(tags)
-                .when(tagService)
-                .saveAll(any());
-        doNothing()
-                .when(giftTagService)
-                .save(anyLong(),anyLong());
 
         GiftCertificateDTO result = service.update(models.get(0), entities.get(0).getId());
 
@@ -243,9 +216,6 @@ class GiftCertificateServiceImplTest {
         doReturn(tags.get(0))
                 .when(tagService)
                 .findTag(anyLong());
-        doReturn(relations)
-                .when(giftTagService)
-                .findByGift(anyLong());
         doNothing()
                 .when(repository)
                 .delete(id);
