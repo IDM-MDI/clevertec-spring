@@ -21,5 +21,5 @@ public class Tag implements BaseEntity<Long> {
     private String name;
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private String status;
+    private Status status;
 }

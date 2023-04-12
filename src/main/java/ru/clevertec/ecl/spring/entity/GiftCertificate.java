@@ -52,5 +52,5 @@ public class GiftCertificate implements BaseEntity<Long> {
     private LocalDateTime updateDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private Status status;
 }
