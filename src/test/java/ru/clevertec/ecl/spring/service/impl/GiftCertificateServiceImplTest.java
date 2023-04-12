@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
@@ -37,19 +39,14 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateMapper mapper;
     @Mock
     private TagService tagService;
-    @Mock
-    private GiftTagService giftTagService;
     @InjectMocks
     private GiftCertificateServiceImpl service;
 
-    private PageFilter page;
     private List<GiftCertificate> entities;
     private List<GiftCertificateDTO> models;
     private List<TagDTO> tags;
-    private List<GiftTag> relations;
     @BeforeEach
     void setup() {
-        page = new PageFilter();
         entities = List.of(
                 aGift().buildToEntity(),
                 aGift().setId(2).buildToEntity(),
@@ -65,11 +62,6 @@ class GiftCertificateServiceImplTest {
                 aTag().setId(2).buildToModel(),
                 aTag().setId(3).buildToModel()
         );
-        relations = List.of(
-                aGiftTag().buildToEntity(),
-                aGiftTag().setTagID(2).buildToEntity(),
-                aGiftTag().setTagID(3).buildToEntity()
-        );
     }
     @Nested
     class FindGift {
@@ -77,18 +69,15 @@ class GiftCertificateServiceImplTest {
         void findGiftsByPageShouldReturnModelList() {
             doReturn(entities)
                     .when(repository)
-                    .findGifts(page);
+                    .findAll(Pageable.ofSize(5));
             doReturn(models.get(0))
                     .when(mapper)
                     .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
                     .findBy(anyLong());
 
-            List<GiftCertificateDTO> result = service.findAll(page);
+            Page<GiftCertificateDTO> result = service.findAll(Pageable.ofSize(5));
 
             Assertions.assertThat(result)
                     .isNotEmpty();

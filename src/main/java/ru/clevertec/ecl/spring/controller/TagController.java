@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.service.TagService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class TagController {
     }
 
     @GetMapping("/search")
-    public Page<TagDTO> findTags(TagDTO tag) {
+    public List<TagDTO> findTags(TagDTO tag) {
         return service.findAll(tag);
     }
 }
