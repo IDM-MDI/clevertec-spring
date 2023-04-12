@@ -6,5 +6,6 @@ public class ExampleMatcherConstant {
     public static ExampleMatcher ENTITY_SEARCH_MATCHER = ExampleMatcher
             .matchingAll()
             .withIgnoreCase()
-            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)
+            .withIgnoreNullValues();
 }

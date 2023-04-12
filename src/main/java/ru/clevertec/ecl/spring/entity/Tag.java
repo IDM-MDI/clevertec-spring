@@ -3,10 +3,12 @@ package ru.clevertec.ecl.spring.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "tag")
+@EntityListeners(AuditTagListener.class)
 @Builder
-@EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,4 +24,17 @@ public class Tag implements BaseEntity<Long> {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return id.equals(tag.id) && name.equals(tag.name) && status == tag.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, status);
+    }
 }

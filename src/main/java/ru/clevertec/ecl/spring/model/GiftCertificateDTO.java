@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 public class GiftCertificateDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
+    private Long id;
     @NotBlank
     @Length(min = 2)
     private String name;
@@ -29,7 +29,7 @@ public class GiftCertificateDTO {
     @Min(1)
     private Double price;
     @Min(1)
-    private long duration;
+    private Long duration;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private String createDate;

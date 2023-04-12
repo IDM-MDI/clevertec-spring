@@ -56,6 +56,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificateDTO save(GiftCertificateDTO gift) {
+        gift.setStatus(Status.ACTIVE);
         return mapper.toModel(repository.save(mapper.toEntity(gift)));
     }
 
@@ -69,7 +70,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public void delete(long id) {
         GiftCertificateDTO gift = findBy(id);
         gift.setStatus(Status.DELETED);
@@ -77,9 +78,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private List<GiftCertificate> searchByTag(List<GiftCertificate> byGift,String tag) {
-        return repository.findByTagsContaining(tagService.findBy(tag))
-                .stream()
-                .filter(byTag -> byGift.stream().anyMatch(gift -> gift.equals(byTag)))
-                .toList();
+        List<GiftCertificate> result = repository.findByTagsContaining(tagService.findBy(tag));
+        return byGift.isEmpty() ?
+                result
+                :
+                result.stream()
+                        .filter(byTag -> byGift.stream().anyMatch(gift -> gift.equals(byTag)))
+                        .toList();
     }
 }

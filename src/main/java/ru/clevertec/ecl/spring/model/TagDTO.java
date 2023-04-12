@@ -15,7 +15,7 @@ import ru.clevertec.ecl.spring.entity.Status;
 @Setter
 public class TagDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private long id;
+    private Long id;
     @NotBlank
     @Length(min = 2)
     private String name;
