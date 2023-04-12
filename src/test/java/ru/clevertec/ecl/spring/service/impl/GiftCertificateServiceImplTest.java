@@ -74,7 +74,7 @@ class GiftCertificateServiceImplTest {
             doReturn(new PageImpl<>(entities))
                     .when(repository)
                     .findAll(Pageable.ofSize(5));
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
             List<GiftCertificateDTO> result = service.findAll(Pageable.ofSize(5))
                     .stream()
@@ -93,7 +93,7 @@ class GiftCertificateServiceImplTest {
 
             doReturn(certificate)
                     .when(mapper)
-                    .toEntity(certificateDTO);
+                    .toGiftCertificate(certificateDTO);
             doReturn(entities)
                     .when(repository)
                     .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
@@ -103,7 +103,7 @@ class GiftCertificateServiceImplTest {
             doReturn(entities)
                     .when(repository)
                     .findByTagsContaining(tagEntity);
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
             List<GiftCertificateDTO> result = service.findAll(certificateDTO, tag);
                                             
@@ -118,11 +118,11 @@ class GiftCertificateServiceImplTest {
 
             doReturn(certificate)
                     .when(mapper)
-                    .toEntity(certificateDTO);
+                    .toGiftCertificate(certificateDTO);
             doReturn(entities)
                     .when(repository)
                     .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
             List<GiftCertificateDTO> result = service.findAll(certificateDTO, null);
 
@@ -138,7 +138,7 @@ class GiftCertificateServiceImplTest {
 
             doReturn(certificate)
                     .when(mapper)
-                    .toEntity(certificateDTO);
+                    .toGiftCertificate(certificateDTO);
             doReturn(List.of())
                     .when(repository)
                     .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
@@ -148,7 +148,7 @@ class GiftCertificateServiceImplTest {
             doReturn(entities)
                     .when(repository)
                     .findByTagsContaining(tagEntity);
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
             List<GiftCertificateDTO> result = service.findAll(certificateDTO, tag);
 
@@ -162,7 +162,7 @@ class GiftCertificateServiceImplTest {
                     .findById(1L);
             doReturn(models.get(0))
                     .when(mapper)
-                    .toModel(any(GiftCertificate.class));
+                    .toGiftCertificateDTO(any(GiftCertificate.class));
 
             GiftCertificateDTO result = service.findBy(1L);
 
@@ -184,13 +184,13 @@ class GiftCertificateServiceImplTest {
     void saveShouldReturnModel() {
         doReturn(entities.get(0))
                 .when(mapper)
-                .toEntity(models.get(0));
+                .toGiftCertificate(models.get(0));
         doReturn(entities.get(0))
                 .when(repository)
                 .save(entities.get(0));
         doReturn(models.get(0))
                 .when(mapper)
-                .toModel(entities.get(0));
+                .toGiftCertificateDTO(entities.get(0));
 
         GiftCertificateDTO result = service.save(models.get(0));
 
@@ -208,10 +208,10 @@ class GiftCertificateServiceImplTest {
                 .findById(1L);
         doReturn(certificateDTO)
                 .when(mapper)
-                .toModel(any(GiftCertificate.class));
+                .toGiftCertificateDTO(any(GiftCertificate.class));
         doReturn(certificate)
                 .when(mapper)
-                .toEntity(certificateDTO);
+                .toGiftCertificate(certificateDTO);
         doReturn(certificate)
                 .when(repository)
                 .save(certificate);
@@ -234,10 +234,10 @@ class GiftCertificateServiceImplTest {
                 .findById(id);
         doReturn(certificateDTO)
                 .when(mapper)
-                .toModel(any(GiftCertificate.class));
+                .toGiftCertificateDTO(any(GiftCertificate.class));
         doReturn(certificate)
                 .when(mapper)
-                .toEntity(certificateDTO);
+                .toGiftCertificate(certificateDTO);
         doReturn(certificate)
                 .when(repository)
                 .save(certificate);

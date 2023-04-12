@@ -26,6 +26,7 @@ import static ru.clevertec.ecl.spring.constant.ExceptionStatus.ENTITY_NOT_FOUND;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class GiftCertificateServiceImpl implements GiftCertificateService {
+
     private final GiftCertificateRepository repository;
     private final GiftCertificateMapper mapper;
     private final TagService tagService;
@@ -33,30 +34,30 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public Page<GiftCertificateDTO> findAll(Pageable page) {
         return repository.findAll(page)
-                .map(mapper::toModel);
+                .map(mapper::toGiftCertificateDTO);
     }
 
     @Override
     public List<GiftCertificateDTO> findAll(GiftCertificateDTO gift, String tag) {
-        List<GiftCertificate> byGift = repository.findAll(Example.of(mapper.toEntity(gift),ENTITY_SEARCH_MATCHER));
+        List<GiftCertificate> byGift = repository.findAll(Example.of(mapper.toGiftCertificate(gift),ENTITY_SEARCH_MATCHER));
         byGift = StringUtils.isNotBlank(tag) ? searchByTag(byGift,tag) : byGift;
         return byGift
                 .stream()
-                .map(mapper::toModel)
+                .map(mapper::toGiftCertificateDTO)
                 .toList();
     }
 
     @Override
     public GiftCertificateDTO findBy(long id) {
         return repository.findById(id)
-                .map(mapper::toModel)
+                .map(mapper::toGiftCertificateDTO)
                 .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()));
     }
 
     @Override
     @Transactional
     public GiftCertificateDTO save(GiftCertificateDTO gift) {
-        return mapper.toModel(repository.save(mapper.toEntity(gift)));
+        return mapper.toGiftCertificateDTO(repository.save(mapper.toGiftCertificate(gift)));
     }
 
     @Override
@@ -64,8 +65,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDTO update(GiftCertificateDTO gift, long id) {
         GiftCertificateDTO fromDB = findBy(id);
         BeanUtils.copyProperties(gift, fromDB);
-        GiftCertificate updatable = mapper.toEntity(fromDB);
-        return mapper.toModel(repository.save(updatable));
+        GiftCertificate updatable = mapper.toGiftCertificate(fromDB);
+        return mapper.toGiftCertificateDTO(repository.save(updatable));
     }
 
     @Override

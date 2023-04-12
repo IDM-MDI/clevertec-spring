@@ -7,5 +7,6 @@ import ru.clevertec.ecl.spring.entity.Tag;
 import java.util.List;
 
 public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
+
     List<GiftCertificate> findByTagsContaining(Tag tag);
 }

@@ -11,12 +11,14 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 @Mapper(componentModel = SPRING)
 public interface GiftCertificateMapper {
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "createDate", source = "createDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     @Mapping(target = "updateDate", source = "updateDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-    GiftCertificateDTO toModel(GiftCertificate entity);
+    GiftCertificateDTO toGiftCertificateDTO(GiftCertificate entity);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "createDate", source = "createDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
     @Mapping(target = "updateDate", source = "updateDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss")
-    GiftCertificate toEntity(GiftCertificateDTO model);
+    GiftCertificate toGiftCertificate(GiftCertificateDTO model);
 }

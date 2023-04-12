@@ -62,7 +62,7 @@ class TagServiceImplTest {
             doReturn(new PageImpl<>(entities))
                     .when(repository)
                     .findAll(Pageable.ofSize(5));
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toTagDTO(gift)).when(mapper).toTagDTO(gift));
 
             List<TagDTO> result = service.findAll(Pageable.ofSize(5))
                     .stream()
@@ -78,11 +78,11 @@ class TagServiceImplTest {
             TagDTO tagDTO = models.get(0);
             doReturn(tag)
                     .when(mapper)
-                    .toEntity(tagDTO);
+                    .toTag(tagDTO);
             doReturn(entities)
                     .when(repository)
                     .findAll(Example.of(tag, ENTITY_SEARCH_MATCHER));
-            entities.forEach(gift -> doReturn(realMapper.toModel(gift)).when(mapper).toModel(gift));
+            entities.forEach(gift -> doReturn(realMapper.toTagDTO(gift)).when(mapper).toTagDTO(gift));
 
             List<TagDTO> result = service.findAll(tagDTO);
 
@@ -100,7 +100,7 @@ class TagServiceImplTest {
                     .findById(id);
             doReturn(tagDTO)
                     .when(mapper)
-                    .toModel(tag);
+                    .toTagDTO(tag);
 
             TagDTO result = service.findBy(id);
 
@@ -146,13 +146,13 @@ class TagServiceImplTest {
     void saveShouldReturnModel() {
         doReturn(entities.get(0))
                 .when(mapper)
-                .toEntity(any(TagDTO.class));
+                .toTag(any(TagDTO.class));
         doReturn(entities.get(0))
                 .when(repository)
                 .save(entities.get(0));
         doReturn(models.get(0))
                 .when(mapper)
-                .toModel(any(Tag.class));
+                .toTagDTO(any(Tag.class));
 
         TagDTO result = service.save(models.get(0));
 
@@ -171,10 +171,10 @@ class TagServiceImplTest {
                 .findById(id);
         doReturn(tag)
                 .when(mapper)
-                .toEntity(tagDTO);
+                .toTag(tagDTO);
         doReturn(tagDTO)
                 .when(mapper)
-                .toModel(tag);
+                .toTagDTO(tag);
         doReturn(tag)
                 .when(repository)
                 .save(tag);
@@ -198,10 +198,10 @@ class TagServiceImplTest {
                 .findById(id);
         doReturn(tag)
                 .when(mapper)
-                .toEntity(tagDTO);
+                .toTag(tagDTO);
         doReturn(tagDTO)
                 .when(mapper)
-                .toModel(tag);
+                .toTagDTO(tag);
         doReturn(tag)
                 .when(repository)
                 .save(tag);

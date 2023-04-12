@@ -25,29 +25,36 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class GiftCertificateController {
+
     private final GiftCertificateService service;
+
     @GetMapping
     public Page<GiftCertificateDTO> findGifts(@Valid Pageable page) {
         return service.findAll(page);
     }
+
     @GetMapping("/{id}")
     public GiftCertificateDTO findGift(@PathVariable @Min(1) long id) {
         return service.findBy(id);
     }
+
     @PostMapping
     public GiftCertificateDTO saveGift(@RequestBody @Valid GiftCertificateDTO gift) {
         return service.save(gift);
     }
+
     @PatchMapping("/{id}")
     public GiftCertificateDTO updateGift(@PathVariable @Min(1) long id,
                              @RequestBody GiftCertificateDTO gift) {
         return service.update(gift, id);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGift(@PathVariable @Min(1) long id) {
         service.delete(id);
         return ResponseEntity.ok("Gift certificate successfully deleted");
     }
+
     @GetMapping("/search")
     public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
         return service.findAll(gift, tag);

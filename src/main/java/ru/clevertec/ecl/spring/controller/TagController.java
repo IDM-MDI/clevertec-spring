@@ -25,24 +25,30 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class TagController {
+
     private final TagService service;
+
     @GetMapping
     public Page<TagDTO> findTags(@Valid Pageable page) {
         return service.findAll(page);
     }
+
     @GetMapping("/{id}")
     public TagDTO findTag(@PathVariable @Min(1) long id) {
         return service.findBy(id);
     }
+
     @PostMapping
     public TagDTO saveTag(@RequestBody @Valid TagDTO tag) {
         return service.save(tag);
     }
+
     @PatchMapping("/{id}")
     public TagDTO updateTag(@PathVariable long id,
                             @RequestBody TagDTO tag) {
         return service.update(tag, id);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTag(@PathVariable @Min(1) long id) {
         service.delete(id);

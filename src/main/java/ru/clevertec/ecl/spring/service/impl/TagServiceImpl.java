@@ -22,25 +22,27 @@ import static ru.clevertec.ecl.spring.constant.ExceptionStatus.ENTITY_NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
+
     private final TagRepository repository;
     private final TagMapper mapper;
+
     @Override
     public Page<TagDTO> findAll(Pageable page) {
         return repository.findAll(page)
-                .map(mapper::toModel);
+                .map(mapper::toTagDTO);
     }
 
     @Override
     public List<TagDTO> findAll(TagDTO tag) {
-        return repository.findAll(Example.of(mapper.toEntity(tag), ENTITY_SEARCH_MATCHER))
+        return repository.findAll(Example.of(mapper.toTag(tag), ENTITY_SEARCH_MATCHER))
                 .stream()
-                .map(mapper::toModel)
+                .map(mapper::toTagDTO)
                 .toList();
     }
 
     @Override
     public TagDTO findBy(long id) {
-        return mapper.toModel(
+        return mapper.toTagDTO(
                 repository.findById(id)
                         .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()))
         );
@@ -54,14 +56,14 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO save(TagDTO tag) {
-        return mapper.toModel(repository.save(mapper.toEntity(tag)));
+        return mapper.toTagDTO(repository.save(mapper.toTag(tag)));
     }
 
     @Override
     public TagDTO update(TagDTO tag, long id) {
         TagDTO fromDB = findBy(id);
         BeanUtils.copyProperties(tag, fromDB);
-        return mapper.toModel(repository.save(mapper.toEntity(fromDB)));
+        return mapper.toTagDTO(repository.save(mapper.toTag(fromDB)));
     }
 
     @Override
