@@ -3,6 +3,8 @@ package ru.clevertec.ecl.spring.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
 
 import java.util.List;
@@ -26,12 +27,12 @@ import java.util.List;
 public class GiftCertificateController {
     private final GiftCertificateService service;
     @GetMapping
-    public List<GiftCertificateDTO> findGifts(@Valid PageFilter page) {
-        return service.findGifts(page);
+    public Page<GiftCertificateDTO> findGifts(@Valid Pageable page) {
+        return service.findAll(page);
     }
     @GetMapping("/{id}")
     public GiftCertificateDTO findGift(@PathVariable @Min(1) long id) {
-        return service.findGift(id);
+        return service.findBy(id);
     }
     @PostMapping
     public GiftCertificateDTO saveGift(@RequestBody @Valid GiftCertificateDTO gift) {
@@ -49,6 +50,6 @@ public class GiftCertificateController {
     }
     @GetMapping("/search")
     public List<GiftCertificateDTO> findGifts(GiftCertificateDTO gift, String tag) {
-        return service.findGifts(gift, tag);
+        return service.findAll(gift, tag);
     }
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
+import static ru.clevertec.ecl.spring.constant.StatusName.ACTIVE;
 
 public class GiftCertificateBuilder implements TestEntityBuilder<GiftCertificate>, TestModelBuilder<GiftCertificateDTO> {
     private long id = 1;

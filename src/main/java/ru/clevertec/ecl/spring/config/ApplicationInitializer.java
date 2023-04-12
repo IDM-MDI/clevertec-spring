@@ -1,20 +1,12 @@
 package ru.clevertec.ecl.spring.config;
 
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class ApplicationInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-    @Override
-    protected Class<?>[] getRootConfigClasses() {
-        return null;
-    }
+@SpringBootApplication
+public class ApplicationInitializer {
 
-    @Override
-    protected Class<?>[] getServletConfigClasses() {
-        return new Class[] {ClevertecSpringTaskApplication.class};
-    }
-
-    @Override
-    protected String[] getServletMappings() {
-        return new String[] {"/"};
+    public static void main(String[] args) {
+        SpringApplication.run(ApplicationInitializer.class, args);
     }
 }

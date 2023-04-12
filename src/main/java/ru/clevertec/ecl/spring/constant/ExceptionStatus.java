@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.spring.exception;
+package ru.clevertec.ecl.spring.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.ToString;

@@ -5,7 +5,7 @@ import ru.clevertec.ecl.spring.builder.TestModelBuilder;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
+import static ru.clevertec.ecl.spring.constant.StatusName.ACTIVE;
 
 public class TagBuilder implements TestEntityBuilder<Tag>, TestModelBuilder<TagDTO> {
     private long id = 1;

@@ -1,56 +1,13 @@
 package ru.clevertec.ecl.spring.config;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.configuration.ClassicConfiguration;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.TransactionManager;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.util.Map;
-
-
 @Configuration
+@EnableJpaRepositories(basePackages = "ru.clevertec.ecl.spring")
+@EntityScan(basePackages = "ru.clevertec.ecl.spring")
 @EnableTransactionManagement(proxyTargetClass = true)
-@Profile("!test")
 public class RepositoryConfig {
-    @Value("${flyway.path}")
-    private String flywayPath;
-
-    @Bean
-    public SessionFactory getSessionFactory(){
-        return new org.hibernate.cfg.Configuration().configure().buildSessionFactory();
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        SessionFactory factory = getSessionFactory();
-        Map<String, Object> properties = factory.getProperties();
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(properties.get("hibernate.connection.driver_class").toString());
-        dataSource.setUrl(properties.get("hibernate.connection.url").toString());
-        dataSource.setUsername(properties.get("connection.username").toString());
-        dataSource.setPassword(properties.get("connection.password").toString());
-        return dataSource;
-    }
-
-    @Bean
-    public Flyway flyway() {
-        ClassicConfiguration config = new ClassicConfiguration();
-        config.setDataSource(dataSource());
-        config.setLocationsAsStrings(flywayPath);
-        Flyway flyway = new Flyway(config);
-        flyway.migrate();
-        return flyway;
-    }
-    @Bean
-    public TransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
 }

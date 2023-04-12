@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.util.TagMapper;
@@ -81,7 +80,7 @@ class TagServiceImplTest {
                     .when(mapper)
                     .toModel(any(Tag.class));
 
-            List<TagDTO> result = service.findTags(models.get(0));
+            List<TagDTO> result = service.findAll(models.get(0));
 
             Assertions.assertThat(result)
                     .isNotEmpty();
@@ -97,7 +96,7 @@ class TagServiceImplTest {
                     .when(mapper)
                     .toModel(any(Tag.class));
 
-            TagDTO result = service.findTag(id);
+            TagDTO result = service.findBy(id);
 
             Assertions.assertThat(result)
                     .isEqualTo(models.get(0));
@@ -108,7 +107,7 @@ class TagServiceImplTest {
             doReturn(Optional.empty())
                     .when(repository)
                     .findTag(id);
-            Assertions.assertThatThrownBy(() -> service.findTag(id))
+            Assertions.assertThatThrownBy(() -> service.findBy(id))
                     .isInstanceOf(ServiceException.class);
         }
         @Test
@@ -123,7 +122,7 @@ class TagServiceImplTest {
                     .when(mapper)
                     .toModel(any(Tag.class));
 
-            TagDTO result = service.findTag(models.get(0));
+            TagDTO result = service.findBy(models.get(0));
 
             Assertions.assertThat(result)
                     .isEqualTo(models.get(0));
@@ -137,7 +136,7 @@ class TagServiceImplTest {
                     .when(repository)
                     .findTags(entities.get(0));
 
-            Assertions.assertThatThrownBy(() -> service.findTag(models.get(0)))
+            Assertions.assertThatThrownBy(() -> service.findBy(models.get(0)))
                     .isInstanceOf(ServiceException.class);
         }
     }

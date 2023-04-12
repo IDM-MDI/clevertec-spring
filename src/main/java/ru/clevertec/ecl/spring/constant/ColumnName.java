@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.spring.entity;
+package ru.clevertec.ecl.spring.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
