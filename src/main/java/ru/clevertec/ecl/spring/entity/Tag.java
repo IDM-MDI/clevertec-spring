@@ -1,42 +1,56 @@
 package ru.clevertec.ecl.spring.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
+
+@Entity
+@Table(name = "tag")
+@EntityListeners(AuditTagListener.class)
 @Builder
-@EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private long id;
+@Getter
+@Setter
+public class Tag implements BaseEntity<Long> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
+
+    @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;
-    private String status;
 
-    public long getId() {
-        return this.id;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return id.equals(tag.id) && name.equals(tag.name) && status == tag.status;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, status);
     }
 }

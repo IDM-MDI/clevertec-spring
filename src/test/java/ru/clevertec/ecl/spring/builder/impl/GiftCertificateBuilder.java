@@ -3,6 +3,7 @@ package ru.clevertec.ecl.spring.builder.impl;
 import ru.clevertec.ecl.spring.builder.TestEntityBuilder;
 import ru.clevertec.ecl.spring.builder.TestModelBuilder;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
+import ru.clevertec.ecl.spring.entity.Status;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
@@ -11,7 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 public class GiftCertificateBuilder implements TestEntityBuilder<GiftCertificate>, TestModelBuilder<GiftCertificateDTO> {
     private long id = 1;
@@ -26,7 +26,7 @@ public class GiftCertificateBuilder implements TestEntityBuilder<GiftCertificate
             aTag().setId(2).buildToModel(),
             aTag().setId(3).buildToModel()
     );
-    private String status = ACTIVE;
+    private Status status = Status.ACTIVE;
 
     private GiftCertificateBuilder() {}
 
@@ -101,7 +101,7 @@ public class GiftCertificateBuilder implements TestEntityBuilder<GiftCertificate
         return this;
     }
 
-    public GiftCertificateBuilder setStatus(String status) {
+    public GiftCertificateBuilder setStatus(Status status) {
         this.status = status;
         return this;
     }

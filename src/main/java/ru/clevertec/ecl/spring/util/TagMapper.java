@@ -10,8 +10,10 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 @Mapper(componentModel = SPRING)
 public interface TagMapper {
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Tag toEntity(TagDTO model);
+    Tag toTag(TagDTO model);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    TagDTO toModel(Tag entity);
+    TagDTO toTagDTO(Tag entity);
 }

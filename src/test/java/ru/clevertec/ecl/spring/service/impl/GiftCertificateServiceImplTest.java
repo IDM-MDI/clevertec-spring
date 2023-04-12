@@ -7,29 +7,31 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
-import ru.clevertec.ecl.spring.entity.GiftTag;
+import ru.clevertec.ecl.spring.entity.Status;
+import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
-import ru.clevertec.ecl.spring.model.PageFilter;
-import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
-import ru.clevertec.ecl.spring.service.GiftTagService;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
+import ru.clevertec.ecl.spring.util.GiftCertificateMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
-import static ru.clevertec.ecl.spring.builder.impl.GiftTagBuilder.aGiftTag;
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
+import static ru.clevertec.ecl.spring.constant.ExampleMatcherConstant.ENTITY_SEARCH_MATCHER;
 
 @ExtendWith(MockitoExtension.class)
 class GiftCertificateServiceImplTest {
@@ -37,21 +39,18 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateRepository repository;
     @Mock
     private GiftCertificateMapper mapper;
+    private GiftCertificateMapper realMapper;
     @Mock
     private TagService tagService;
-    @Mock
-    private GiftTagService giftTagService;
     @InjectMocks
     private GiftCertificateServiceImpl service;
 
-    private PageFilter page;
     private List<GiftCertificate> entities;
     private List<GiftCertificateDTO> models;
-    private List<TagDTO> tags;
-    private List<GiftTag> relations;
+    private List<Tag> tags;
     @BeforeEach
     void setup() {
-        page = new PageFilter();
+        realMapper = new GiftCertificateMapperImpl();
         entities = List.of(
                 aGift().buildToEntity(),
                 aGift().setId(2).buildToEntity(),
@@ -63,125 +62,120 @@ class GiftCertificateServiceImplTest {
                 aGift().setId(3).buildToModel()
         );
         tags = List.of(
-                aTag().buildToModel(),
-                aTag().setId(2).buildToModel(),
-                aTag().setId(3).buildToModel()
-        );
-        relations = List.of(
-                aGiftTag().buildToEntity(),
-                aGiftTag().setTagID(2).buildToEntity(),
-                aGiftTag().setTagID(3).buildToEntity()
+                aTag().buildToEntity(),
+                aTag().setId(2).buildToEntity(),
+                aTag().setId(3).buildToEntity()
         );
     }
     @Nested
     class FindGift {
         @Test
-        void findGiftsByPageShouldReturnModelList() {
+        void findAllByPageShouldReturnModelList() {
+            doReturn(new PageImpl<>(entities))
+                    .when(repository)
+                    .findAll(Pageable.ofSize(5));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
+
+            List<GiftCertificateDTO> result = service.findAll(Pageable.ofSize(5))
+                    .stream()
+                    .toList();
+
+            Assertions.assertThat(result)
+                    .isEqualTo(models);
+        }
+
+        @Test
+        void findByGiftAndTagShouldReturnModelList() {
+            GiftCertificate certificate = entities.get(0);
+            GiftCertificateDTO certificateDTO = models.get(0);
+            Tag tagEntity = tags.get(0);
+            String tag = "tag";
+
+            doReturn(certificate)
+                    .when(mapper)
+                    .toGiftCertificate(certificateDTO);
             doReturn(entities)
                     .when(repository)
-                    .findGifts(page);
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
-            doReturn(tags.get(0))
+                    .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
+            doReturn(tagEntity)
                     .when(tagService)
-                    .findTag(anyLong());
-
-            List<GiftCertificateDTO> result = service.findGifts(page);
-
-            Assertions.assertThat(result)
-                    .isNotEmpty();
-        }
-
-        @Test
-        void findGiftsByGiftAndTagShouldReturnModelList() {
-            doReturn(entities.get(0))
-                    .when(mapper)
-                    .toEntity(models.get(0));
+                    .findBy(tag);
             doReturn(entities)
                     .when(repository)
-                    .findGifts(entities.get(0));
-            doReturn(tags.get(0))
-                    .when(tagService)
-                    .findTag(any(TagDTO.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByTag(anyLong());
-            doReturn(Optional.of(entities.get(0)))
-                    .when(repository)
-                    .findGift(anyLong());
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
-            doReturn(tags.get(0))
-                    .when(tagService)
-                    .findTag(anyLong());
+                    .findByTagsContaining(tagEntity);
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
-            List<GiftCertificateDTO> result = service.findGifts(models.get(0), "test tag");
-
+            List<GiftCertificateDTO> result = service.findAll(certificateDTO, tag);
+                                            
             Assertions.assertThat(result)
-                    .isNotEmpty();
+                    .isEqualTo(models);
         }
 
         @Test
-        void findGiftsByGiftShouldReturnModelList() {
-            doReturn(entities.get(0))
+        void findByGiftShouldReturnModelList() {
+            GiftCertificate certificate = entities.get(0);
+            GiftCertificateDTO certificateDTO = models.get(0);
+
+            doReturn(certificate)
                     .when(mapper)
-                    .toEntity(models.get(0));
+                    .toGiftCertificate(certificateDTO);
             doReturn(entities)
                     .when(repository)
-                    .findGifts(entities.get(0));
-            doReturn(Optional.of(entities.get(0)))
-                    .when(repository)
-                    .findGift(anyLong());
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(GiftCertificate.class));
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
-            doReturn(tags.get(0))
-                    .when(tagService)
-                    .findTag(anyLong());
+                    .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
 
-            List<GiftCertificateDTO> result = service.findGifts(models.get(0), null);
+            List<GiftCertificateDTO> result = service.findAll(certificateDTO, null);
 
             Assertions.assertThat(result)
-                    .isNotEmpty();
+                    .isEqualTo(models);
         }
         @Test
-        void findGiftByIDShouldReturnModel() {
-            doReturn(Optional.of(entities.get(0)))
-                    .when(repository)
-                    .findGift(anyLong());
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(GiftCertificate.class));
-            doReturn(tags.get(0))
-                    .when(tagService)
-                    .findTag(anyLong());
-            doReturn(relations)
-                    .when(giftTagService)
-                    .findByGift(anyLong());
+        void findByTagShouldReturnModelList() {
+            GiftCertificate certificate = entities.get(0);
+            GiftCertificateDTO certificateDTO = models.get(0);
+            Tag tagEntity = tags.get(0);
+            String tag = "tag";
 
-            GiftCertificateDTO result = service.findGift(1L);
+            doReturn(certificate)
+                    .when(mapper)
+                    .toGiftCertificate(certificateDTO);
+            doReturn(List.of())
+                    .when(repository)
+                    .findAll(Example.of(certificate,ENTITY_SEARCH_MATCHER));
+            doReturn(tagEntity)
+                    .when(tagService)
+                    .findBy(tag);
+            doReturn(entities)
+                    .when(repository)
+                    .findByTagsContaining(tagEntity);
+            entities.forEach(gift -> doReturn(realMapper.toGiftCertificateDTO(gift)).when(mapper).toGiftCertificateDTO(gift));
+
+            List<GiftCertificateDTO> result = service.findAll(certificateDTO, tag);
 
             Assertions.assertThat(result)
-                    .isNotNull();
+                    .isEqualTo(models);
         }
         @Test
-        void findGiftByIDShouldThrowServiceException() {
+        void findByIDShouldReturnModel() {
+            doReturn(Optional.of(entities.get(0)))
+                    .when(repository)
+                    .findById(1L);
+            doReturn(models.get(0))
+                    .when(mapper)
+                    .toGiftCertificateDTO(any(GiftCertificate.class));
+
+            GiftCertificateDTO result = service.findBy(1L);
+
+            Assertions.assertThat(result)
+                    .isEqualTo(models.get(0));
+        }
+        @Test
+        void findByIDShouldThrowServiceException() {
             long id = 1;
             doReturn(Optional.empty())
                     .when(repository)
-                    .findGift(id);
-            Assertions.assertThatThrownBy(() -> service.findGift(id))
+                    .findById(id);
+            Assertions.assertThatThrownBy(() -> service.findBy(id))
                     .isInstanceOf(ServiceException.class);
         }
     }
@@ -190,72 +184,67 @@ class GiftCertificateServiceImplTest {
     void saveShouldReturnModel() {
         doReturn(entities.get(0))
                 .when(mapper)
-                .toEntity(models.get(0));
+                .toGiftCertificate(models.get(0));
         doReturn(entities.get(0))
                 .when(repository)
                 .save(entities.get(0));
         doReturn(models.get(0))
                 .when(mapper)
-                .toModel(entities.get(0));
-        doReturn(tags)
-                .when(tagService)
-                .saveAll(any());
-        doNothing()
-                .when(giftTagService)
-                .save(anyLong(),anyLong());
+                .toGiftCertificateDTO(entities.get(0));
 
         GiftCertificateDTO result = service.save(models.get(0));
 
         Assertions.assertThat(result)
-                .isNotNull();
+                .isEqualTo(models.get(0));
     }
 
     @Test
     void updateShouldReturnModel() {
-        doReturn(entities.get(0))
-                .when(mapper)
-                .toEntity(models.get(0));
-        doReturn(entities.get(0))
-                .when(repository)
-                .update(entities.get(0),entities.get(0).getId());
-        doReturn(models.get(0))
-                .when(mapper)
-                .toModel(entities.get(0));
-        doReturn(tags)
-                .when(tagService)
-                .saveAll(any());
-        doNothing()
-                .when(giftTagService)
-                .save(anyLong(),anyLong());
+        GiftCertificateDTO certificateDTO = models.get(0);
+        GiftCertificate certificate = entities.get(0);
 
-        GiftCertificateDTO result = service.update(models.get(0), entities.get(0).getId());
+        doReturn(Optional.of(certificate))
+                .when(repository)
+                .findById(1L);
+        doReturn(certificateDTO)
+                .when(mapper)
+                .toGiftCertificateDTO(any(GiftCertificate.class));
+        doReturn(certificate)
+                .when(mapper)
+                .toGiftCertificate(certificateDTO);
+        doReturn(certificate)
+                .when(repository)
+                .save(certificate);
+
+
+        GiftCertificateDTO result = service.update(certificateDTO, certificate.getId());
 
         Assertions.assertThat(result)
-                .isNotNull();
+                .isEqualTo(certificateDTO);
     }
 
     @Test
     void deleteShouldDeleteModel() {
-        long id = 1;
-        doReturn(Optional.of(entities.get(0)))
+        GiftCertificateDTO certificateDTO = GiftCertificateBuilder.aGift().setStatus(Status.DELETED).buildToModel();
+        GiftCertificate certificate = GiftCertificateBuilder.aGift().setStatus(Status.DELETED).buildToEntity();
+        long id = 1L;
+
+        doReturn(Optional.of(certificate))
                 .when(repository)
-                .findGift(anyLong());
-        doReturn(models.get(0))
+                .findById(id);
+        doReturn(certificateDTO)
                 .when(mapper)
-                .toModel(any(GiftCertificate.class));
-        doReturn(tags.get(0))
-                .when(tagService)
-                .findTag(anyLong());
-        doReturn(relations)
-                .when(giftTagService)
-                .findByGift(anyLong());
-        doNothing()
+                .toGiftCertificateDTO(any(GiftCertificate.class));
+        doReturn(certificate)
+                .when(mapper)
+                .toGiftCertificate(certificateDTO);
+        doReturn(certificate)
                 .when(repository)
-                .delete(id);
+                .save(certificate);
 
         service.delete(id);
 
-        verify(repository)
-                .delete(id);
+        Mockito.verify(repository, times(2))
+                .findById(id);
     }
 }

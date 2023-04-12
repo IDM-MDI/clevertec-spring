@@ -8,22 +8,26 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import ru.clevertec.ecl.spring.entity.Status;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.util.TagMapper;
+import ru.clevertec.ecl.spring.util.TagMapperImpl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
+import static ru.clevertec.ecl.spring.constant.ExampleMatcherConstant.ENTITY_SEARCH_MATCHER;
 
 @ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
@@ -31,14 +35,13 @@ class TagServiceImplTest {
     private TagRepository repository;
     @Mock
     private TagMapper mapper;
+    private TagMapper realMapper;
     @InjectMocks
     private TagServiceImpl service;
     private List<Tag> entities;
     private List<TagDTO> models;
-    private PageFilter page;
     @BeforeEach
     void setup() {
-        page = new PageFilter();
         entities = List.of(
                 aTag().buildToEntity(),
                 aTag().setId(2).buildToEntity(),
@@ -49,95 +52,92 @@ class TagServiceImplTest {
                 aTag().setId(2).buildToModel(),
                 aTag().setId(3).buildToModel()
         );
+        realMapper = new TagMapperImpl();
     }
 
     @Nested
     class FindTag {
         @Test
-        void findTagsByPageShouldReturnModelList() {
-            doReturn(entities)
+        void findByPageShouldReturnModelList() {
+            doReturn(new PageImpl<>(entities))
                     .when(repository)
-                    .findTags(page);
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(Tag.class));
+                    .findAll(Pageable.ofSize(5));
+            entities.forEach(gift -> doReturn(realMapper.toTagDTO(gift)).when(mapper).toTagDTO(gift));
 
-
-            List<TagDTO> result = service.findTags(page);
+            List<TagDTO> result = service.findAll(Pageable.ofSize(5))
+                    .stream()
+                    .toList();
 
             Assertions.assertThat(result)
-                    .isNotEmpty();
+                    .isEqualTo(models);
         }
 
         @Test
-        void findTagsByTagShouldReturnModelList() {
-            doReturn(entities.get(0))
+        void findByTagShouldReturnModelList() {
+            Tag tag = entities.get(0);
+            TagDTO tagDTO = models.get(0);
+            doReturn(tag)
                     .when(mapper)
-                    .toEntity(any(TagDTO.class));
+                    .toTag(tagDTO);
             doReturn(entities)
                     .when(repository)
-                    .findTags(entities.get(0));
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(Tag.class));
+                    .findAll(Example.of(tag, ENTITY_SEARCH_MATCHER));
+            entities.forEach(gift -> doReturn(realMapper.toTagDTO(gift)).when(mapper).toTagDTO(gift));
 
-            List<TagDTO> result = service.findTags(models.get(0));
+            List<TagDTO> result = service.findAll(tagDTO);
 
             Assertions.assertThat(result)
-                    .isNotEmpty();
+                    .isEqualTo(models);
         }
 
         @Test
-        void findTagByIDShouldReturnModel() {
+        void findByIDShouldReturnModel() {
+            Tag tag = entities.get(0);
+            TagDTO tagDTO = models.get(0);
             long id = 1;
-            doReturn(Optional.of(entities.get(0)))
+            doReturn(Optional.of(tag))
                     .when(repository)
-                    .findTag(id);
-            doReturn(models.get(0))
+                    .findById(id);
+            doReturn(tagDTO)
                     .when(mapper)
-                    .toModel(any(Tag.class));
+                    .toTagDTO(tag);
 
-            TagDTO result = service.findTag(id);
+            TagDTO result = service.findBy(id);
 
             Assertions.assertThat(result)
-                    .isEqualTo(models.get(0));
+                    .isEqualTo(tagDTO);
         }
         @Test
-        void findTagByIDShouldThrowServiceException() {
+        void findByIDShouldThrowServiceException() {
             long id = 1;
             doReturn(Optional.empty())
                     .when(repository)
-                    .findTag(id);
-            Assertions.assertThatThrownBy(() -> service.findTag(id))
+                    .findById(id);
+            Assertions.assertThatThrownBy(() -> service.findBy(id))
                     .isInstanceOf(ServiceException.class);
         }
         @Test
-        void findTagShouldReturnTag() {
-            doReturn(entities.get(0))
-                    .when(mapper)
-                    .toEntity(any(TagDTO.class));
-            doReturn(entities)
+        void findByNameShouldReturnEntity() {
+            String name = "tag";
+            Tag tag = entities.get(0);
+            doReturn(Optional.of(tag))
                     .when(repository)
-                    .findTags(entities.get(0));
-            doReturn(models.get(0))
-                    .when(mapper)
-                    .toModel(any(Tag.class));
+                    .findByNameLikeIgnoreCase(name);
 
-            TagDTO result = service.findTag(models.get(0));
+            Tag actual = service.findBy(name);
 
-            Assertions.assertThat(result)
-                    .isEqualTo(models.get(0));
+            Assertions.assertThat(actual)
+                    .isEqualTo(entities.get(0));
         }
         @Test
-        void findTagShouldThrowServiceException() {
-            doReturn(entities.get(0))
-                    .when(mapper)
-                    .toEntity(any(TagDTO.class));
-            doReturn(Collections.emptyList())
-                    .when(repository)
-                    .findTags(entities.get(0));
+        void findByNameShouldThrowServiceException() {
+            String name = "tag";
 
-            Assertions.assertThatThrownBy(() -> service.findTag(models.get(0)))
+            doReturn(Optional.empty())
+                    .when(repository)
+                    .findByNameLikeIgnoreCase(name);
+
+            Assertions.assertThatThrownBy(() -> service.findBy(name))
                     .isInstanceOf(ServiceException.class);
         }
     }
@@ -146,13 +146,13 @@ class TagServiceImplTest {
     void saveShouldReturnModel() {
         doReturn(entities.get(0))
                 .when(mapper)
-                .toEntity(any(TagDTO.class));
+                .toTag(any(TagDTO.class));
         doReturn(entities.get(0))
                 .when(repository)
                 .save(entities.get(0));
         doReturn(models.get(0))
                 .when(mapper)
-                .toModel(any(Tag.class));
+                .toTagDTO(any(Tag.class));
 
         TagDTO result = service.save(models.get(0));
 
@@ -162,51 +162,52 @@ class TagServiceImplTest {
 
     @Test
     void updateShouldReturnModel() {
+        Tag tag = entities.get(0);
+        TagDTO tagDTO = models.get(0);
         long id = 1;
-        doReturn(entities.get(0))
-                .when(mapper)
-                .toEntity(any(TagDTO.class));
-        doReturn(entities.get(0))
-                .when(repository)
-                .update(entities.get(0), id);
-        doReturn(models.get(0))
-                .when(mapper)
-                .toModel(any(Tag.class));
 
-        TagDTO result = service.update(models.get(0), id);
+        doReturn(Optional.of(tag))
+                .when(repository)
+                .findById(id);
+        doReturn(tag)
+                .when(mapper)
+                .toTag(tagDTO);
+        doReturn(tagDTO)
+                .when(mapper)
+                .toTagDTO(tag);
+        doReturn(tag)
+                .when(repository)
+                .save(tag);
+
+        TagDTO result = service.update(tagDTO, id);
 
         Assertions.assertThat(result)
-                .isEqualTo(models.get(0));
-    }
-
-    @Test
-    void saveAllShouldReturnModelList() {
-        doReturn(entities.get(0))
-                .when(mapper)
-                .toEntity(any(TagDTO.class));
-        doReturn(entities.get(0))
-                .when(repository)
-                .save(any(Tag.class));
-        doReturn(models.get(0))
-                .when(mapper)
-                .toModel(any(Tag.class));
-
-        List<TagDTO> result = service.saveAll(models);
-
-        Assertions.assertThat(result)
-                .isNotEmpty();
+                .isEqualTo(tagDTO);
     }
 
     @Test
     void deleteShouldDeleteModel() {
+        Tag tag = entities.get(0);
+        tag.setStatus(Status.DELETED);
+        TagDTO tagDTO = models.get(0);
+        tagDTO.setStatus(Status.DELETED);
         long id = 1;
-        doNothing()
+
+        doReturn(Optional.of(tag))
                 .when(repository)
-                .delete(id);
+                .findById(id);
+        doReturn(tag)
+                .when(mapper)
+                .toTag(tagDTO);
+        doReturn(tagDTO)
+                .when(mapper)
+                .toTagDTO(tag);
+        doReturn(tag)
+                .when(repository)
+                .save(tag);
 
         service.delete(id);
 
-        verify(repository)
-                .delete(id);
+        verify(repository,times(2)).findById(id);
     }
 }

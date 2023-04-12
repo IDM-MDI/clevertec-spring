@@ -2,15 +2,14 @@ package ru.clevertec.ecl.spring.builder.impl;
 
 import ru.clevertec.ecl.spring.builder.TestEntityBuilder;
 import ru.clevertec.ecl.spring.builder.TestModelBuilder;
+import ru.clevertec.ecl.spring.entity.Status;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.model.TagDTO;
-
-import static ru.clevertec.ecl.spring.entity.StatusName.ACTIVE;
 
 public class TagBuilder implements TestEntityBuilder<Tag>, TestModelBuilder<TagDTO> {
     private long id = 1;
     private String name = "test";
-    private String status = ACTIVE;
+    private Status status = Status.ACTIVE;
     private TagBuilder() {}
     public static TagBuilder aTag() {
         return new TagBuilder();
@@ -43,7 +42,7 @@ public class TagBuilder implements TestEntityBuilder<Tag>, TestModelBuilder<TagD
         return this;
     }
 
-    public TagBuilder setStatus(String status) {
+    public TagBuilder setStatus(Status status) {
         this.status = status;
         return this;
     }

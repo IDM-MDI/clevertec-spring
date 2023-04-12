@@ -11,69 +11,69 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.exception.ServiceException;
+import ru.clevertec.ecl.spring.model.ExceptionDTO;
 
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.METHOD_ARGUMENT_INVALID;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.METHOD_NOT_FOUND;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_WEB_EXCEPTION;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.REQUEST_NOT_VALID;
+import java.time.LocalDateTime;
+
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.METHOD_ARGUMENT_INVALID;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.METHOD_NOT_FOUND;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.OTHER_WEB_EXCEPTION;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.REQUEST_NOT_VALID;
 
 @RestControllerAdvice
 public class ExceptionController {
-    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
-    @ExceptionHandler(RepositoryException.class)
-    public ResponseEntity<String> handleServiceException(RepositoryException exception) {
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(exception.getMessage());
-    }
 
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<String> handleServiceException(ServiceException exception) {
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(exception.getMessage());
+    public ExceptionDTO handleServiceException(ServiceException exception) {
+        return ExceptionDTO.builder()
+                .message(exception.getMessage())
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND)
+                .build();
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<String> handleMethodArgumentException() {
-        return ResponseEntity
+    public ExceptionDTO handleMethodArgumentException() {
+        return ExceptionDTO.builder()
+                .message(METHOD_ARGUMENT_INVALID.toString())
+                .timestamp(LocalDateTime.now())
                 .status(HttpStatus.CONFLICT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(METHOD_ARGUMENT_INVALID.toString());
+                .build();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<String> handleNoHandlerFoundException() {
-        return ResponseEntity
+    public ExceptionDTO handleNoHandlerFoundException() {
+        return ExceptionDTO.builder()
+                .message(METHOD_NOT_FOUND.toString())
+                .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(METHOD_NOT_FOUND.toString());
+                .build();
     }
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<String> handleMethodNotSupportException() {
-        return ResponseEntity
+    public ExceptionDTO handleMethodNotSupportException() {
+        return ExceptionDTO.builder()
+                .message(REQUEST_NOT_VALID.toString())
+                .timestamp(LocalDateTime.now())
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(REQUEST_NOT_VALID.toString());
+                .build();
     }
     @ExceptionHandler(NoSuchMethodException.class)
-    public ResponseEntity<String> handleNotFoundException() {
-        return ResponseEntity
+    public ExceptionDTO handleNotFoundException() {
+        return ExceptionDTO.builder()
+                .message(METHOD_NOT_FOUND.toString())
+                .timestamp(LocalDateTime.now())
                 .status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(METHOD_NOT_FOUND.toString());
+                .build();
     }
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<String> handleConstraintException() {
-        return ResponseEntity
+    public ExceptionDTO handleConstraintException() {
+        return ExceptionDTO.builder()
+                .message(OTHER_WEB_EXCEPTION.toString())
+                .timestamp(LocalDateTime.now())
                 .status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(OTHER_WEB_EXCEPTION.toString());
+                .build();
     }
 }

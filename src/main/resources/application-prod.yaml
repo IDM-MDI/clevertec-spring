@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/certificates
+    username: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: h2
+  flyway:
+    url: jdbc:postgresql://db:5432/certificates
+    user: username
+    password: password
+    driver-class-name: org.postgresql.Driver
+    baseline-on-migrate: true
+    locations: classpath:db/migration/prod
