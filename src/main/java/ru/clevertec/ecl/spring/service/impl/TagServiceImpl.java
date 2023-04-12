@@ -39,14 +39,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDTO findBy(TagDTO tag) {
-        return findAll(tag)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new ServiceException(ENTITY_NOT_FOUND.toString()));
-    }
-
-    @Override
     public TagDTO findBy(long id) {
         return mapper.toModel(
                 repository.findById(id)

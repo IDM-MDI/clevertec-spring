@@ -56,7 +56,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     @Transactional
     public GiftCertificateDTO save(GiftCertificateDTO gift) {
-        gift.setStatus(Status.ACTIVE);
         return mapper.toModel(repository.save(mapper.toEntity(gift)));
     }
 

@@ -54,11 +54,11 @@ public class GiftCertificate implements BaseEntity<Long> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return id.equals(that.id) && name.equals(that.name) && description.equals(that.description) && price.equals(that.price) && duration.equals(that.duration) && Objects.equals(tags, that.tags) && createDate.equals(that.createDate) && updateDate.equals(that.updateDate) && status == that.status;
+        return id.equals(that.id) && name.equals(that.name) && description.equals(that.description) && price.equals(that.price) && duration.equals(that.duration) && createDate.equals(that.createDate) && updateDate.equals(that.updateDate) && status == that.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, duration, tags, createDate, updateDate, status);
+        return Objects.hash(id, name, description, price, duration, createDate, updateDate, status);
     }
 }

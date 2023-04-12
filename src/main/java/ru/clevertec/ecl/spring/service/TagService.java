@@ -10,7 +10,6 @@ import java.util.List;
 public interface TagService {
     Page<TagDTO> findAll(Pageable page);
     List<TagDTO> findAll(TagDTO tag);
-    TagDTO findBy(TagDTO tag);
     TagDTO findBy(long id);
     Tag findBy(String name);
     TagDTO save(TagDTO tag);
