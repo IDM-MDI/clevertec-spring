@@ -1,4 +1,4 @@
-package ru.clevertec.ecl.spring.entity;
+package ru.clevertec.ecl.spring.constant;
 
 public class TableName {
     public static final String GIFT_CERTIFICATE = "gift_certificate";

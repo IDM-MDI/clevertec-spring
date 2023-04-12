@@ -1,7 +1,6 @@
 package ru.clevertec.ecl.spring.service;
 
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
-import ru.clevertec.ecl.spring.model.PageFilter;
 
 import java.util.List;
 

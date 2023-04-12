@@ -1,17 +1,7 @@
 package ru.clevertec.ecl.spring.repository;
 
-import jakarta.validation.constraints.NotNull;
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
-import ru.clevertec.ecl.spring.model.PageFilter;
 
-import java.util.List;
-import java.util.Optional;
-
-public interface GiftCertificateRepository {
-    List<GiftCertificate> findGifts(@NotNull PageFilter page);
-    List<GiftCertificate> findGifts(GiftCertificate certificate);
-    Optional<GiftCertificate> findGift(long id);
-    GiftCertificate save(GiftCertificate certificate);
-    GiftCertificate update(GiftCertificate certificate, long id);
-    void delete(long id);
+public interface GiftCertificateRepository extends JpaRepository<GiftCertificate, Long> {
 }

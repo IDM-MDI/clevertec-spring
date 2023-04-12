@@ -11,7 +11,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
-import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftTagRowMapper;
 
 import java.sql.SQLException;

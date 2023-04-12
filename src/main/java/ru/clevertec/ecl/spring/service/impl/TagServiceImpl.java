@@ -3,7 +3,6 @@ package ru.clevertec.ecl.spring.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.clevertec.ecl.spring.exception.ServiceException;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.TagRepository;
 import ru.clevertec.ecl.spring.service.TagService;
@@ -11,7 +10,7 @@ import ru.clevertec.ecl.spring.util.TagMapper;
 
 import java.util.List;
 
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.ENTITY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

@@ -1,90 +1,56 @@
 package ru.clevertec.ecl.spring.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
+@Entity
+@Table(name = "gift_certificate")
+@EntityListeners(AuditingEntityListener.class)
 @Builder
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class GiftCertificate {
-    private long id;
+@Getter
+@Setter
+public class GiftCertificate implements BaseEntity<Long> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
+    @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;
+    @Column(name = "description", nullable = false, length = 255, unique = false)
     private String description;
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
-    private long duration;
+    @Column(name = "duration", nullable = false)
+    private Long duration;
+
+    @ManyToMany(fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST})
+    @JoinTable(
+            name = "gift_tag",
+            joinColumns = @JoinColumn(name = "gift_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Tag> tags;
+
+    @Column(name = "create_date", columnDefinition= "TIMESTAMP WITH TIME ZONE", nullable = false)
+    @CreatedDate
     private LocalDateTime createDate;
+    @Column(name = "update_date", columnDefinition= "TIMESTAMP WITH TIME ZONE", nullable = false)
+    @LastModifiedDate
     private LocalDateTime updateDate;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private String status;
-
-    public long getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public BigDecimal getPrice() {
-        return this.price;
-    }
-
-    public long getDuration() {
-        return this.duration;
-    }
-
-    public LocalDateTime getCreateDate() {
-        return this.createDate;
-    }
-
-    public LocalDateTime getUpdateDate() {
-        return this.updateDate;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
-
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
-    public void setUpdateDate(LocalDateTime updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

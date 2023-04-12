@@ -8,17 +8,15 @@ import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.entity.GiftTag;
 import ru.clevertec.ecl.spring.exception.ServiceException;
 import ru.clevertec.ecl.spring.model.GiftCertificateDTO;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 import ru.clevertec.ecl.spring.repository.GiftCertificateRepository;
 import ru.clevertec.ecl.spring.service.GiftCertificateService;
-import ru.clevertec.ecl.spring.service.GiftTagService;
 import ru.clevertec.ecl.spring.service.TagService;
 import ru.clevertec.ecl.spring.util.GiftCertificateMapper;
 
 import java.util.List;
 
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.ENTITY_NOT_FOUND;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.ENTITY_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor

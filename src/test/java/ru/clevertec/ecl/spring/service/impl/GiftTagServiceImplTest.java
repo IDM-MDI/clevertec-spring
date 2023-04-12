@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.clevertec.ecl.spring.entity.GiftTag;
-import ru.clevertec.ecl.spring.repository.GiftTagRepository;
 
 import java.util.List;
 

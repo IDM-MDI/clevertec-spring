@@ -14,13 +14,14 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
 import ru.clevertec.ecl.spring.exception.ServiceException;
 
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.METHOD_ARGUMENT_INVALID;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.METHOD_NOT_FOUND;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.OTHER_WEB_EXCEPTION;
-import static ru.clevertec.ecl.spring.exception.ExceptionStatus.REQUEST_NOT_VALID;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.METHOD_ARGUMENT_INVALID;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.METHOD_NOT_FOUND;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.OTHER_WEB_EXCEPTION;
+import static ru.clevertec.ecl.spring.constant.ExceptionStatus.REQUEST_NOT_VALID;
 
 @RestControllerAdvice
 public class ExceptionController {
+
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(RepositoryException.class)
     public ResponseEntity<String> handleServiceException(RepositoryException exception) {

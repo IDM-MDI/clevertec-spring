@@ -1,42 +1,25 @@
 package ru.clevertec.ecl.spring.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "tag")
 @Builder
 @EqualsAndHashCode
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private long id;
+@Getter
+@Setter
+public class Tag implements BaseEntity<Long> {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
+    @Column(name = "name", nullable = false, length = 255, unique = true)
     private String name;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private String status;
-
-    public long getId() {
-        return this.id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

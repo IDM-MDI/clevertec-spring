@@ -12,7 +12,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.Tag;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.rowmapper.TagRowMapper;
 
 import java.sql.SQLException;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.builder.impl.TagBuilder.aTag;
-import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
+import static ru.clevertec.ecl.spring.constant.StatusName.DELETED;
 
 class TagRepositoryImplTest {
     private TagRepositoryImpl repository;

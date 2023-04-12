@@ -1,6 +1,5 @@
 package ru.clevertec.ecl.spring.service;
 
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.model.TagDTO;
 
 import java.util.List;

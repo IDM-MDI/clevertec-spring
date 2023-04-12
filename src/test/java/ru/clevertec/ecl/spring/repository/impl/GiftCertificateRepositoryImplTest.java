@@ -11,7 +11,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.clevertec.ecl.spring.entity.GiftCertificate;
 import ru.clevertec.ecl.spring.exception.RepositoryException;
-import ru.clevertec.ecl.spring.model.PageFilter;
 import ru.clevertec.ecl.spring.repository.rowmapper.GiftCertificateRowMapper;
 
 import java.sql.SQLException;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static ru.clevertec.ecl.spring.builder.impl.GiftCertificateBuilder.aGift;
-import static ru.clevertec.ecl.spring.entity.StatusName.DELETED;
+import static ru.clevertec.ecl.spring.constant.StatusName.DELETED;
 
 class GiftCertificateRepositoryImplTest {
     private static final String MORE_THAN_255 = "asodkasdaslkjelksajdklasjeklasjdalskjdaksjdlaksjdasldjkaslkdjaskldjaslkdjaslkdjaslkdjasdlakjewklajsdlkajsdklasjdlkasdjaklsdjkasljdlkasjdlkajwelkajsldkjaslkdjaslkdjaslkdjalskdjaklsdjalksdjakljeklwajklasjdklasjdklasdjklasjdaklwjeklajsdlkasjdklajskldjasdasdasd";
