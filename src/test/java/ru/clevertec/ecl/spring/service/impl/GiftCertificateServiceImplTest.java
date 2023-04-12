@@ -86,9 +86,9 @@ class GiftCertificateServiceImplTest {
                     .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
-                    .findTag(anyLong());
+                    .findBy(anyLong());
 
-            List<GiftCertificateDTO> result = service.findGifts(page);
+            List<GiftCertificateDTO> result = service.findAll(page);
 
             Assertions.assertThat(result)
                     .isNotEmpty();
@@ -104,7 +104,7 @@ class GiftCertificateServiceImplTest {
                     .findGifts(entities.get(0));
             doReturn(tags.get(0))
                     .when(tagService)
-                    .findTag(any(TagDTO.class));
+                    .findBy(any(TagDTO.class));
             doReturn(relations)
                     .when(giftTagService)
                     .findByTag(anyLong());
@@ -119,9 +119,9 @@ class GiftCertificateServiceImplTest {
                     .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
-                    .findTag(anyLong());
+                    .findBy(anyLong());
 
-            List<GiftCertificateDTO> result = service.findGifts(models.get(0), "test tag");
+            List<GiftCertificateDTO> result = service.findAll(models.get(0), "test tag");
 
             Assertions.assertThat(result)
                     .isNotEmpty();
@@ -146,9 +146,9 @@ class GiftCertificateServiceImplTest {
                     .findByGift(anyLong());
             doReturn(tags.get(0))
                     .when(tagService)
-                    .findTag(anyLong());
+                    .findBy(anyLong());
 
-            List<GiftCertificateDTO> result = service.findGifts(models.get(0), null);
+            List<GiftCertificateDTO> result = service.findAll(models.get(0), null);
 
             Assertions.assertThat(result)
                     .isNotEmpty();
@@ -163,12 +163,12 @@ class GiftCertificateServiceImplTest {
                     .toModel(any(GiftCertificate.class));
             doReturn(tags.get(0))
                     .when(tagService)
-                    .findTag(anyLong());
+                    .findBy(anyLong());
             doReturn(relations)
                     .when(giftTagService)
                     .findByGift(anyLong());
 
-            GiftCertificateDTO result = service.findGift(1L);
+            GiftCertificateDTO result = service.findBy(1L);
 
             Assertions.assertThat(result)
                     .isNotNull();
@@ -179,7 +179,7 @@ class GiftCertificateServiceImplTest {
             doReturn(Optional.empty())
                     .when(repository)
                     .findGift(id);
-            Assertions.assertThatThrownBy(() -> service.findGift(id))
+            Assertions.assertThatThrownBy(() -> service.findBy(id))
                     .isInstanceOf(ServiceException.class);
         }
     }
@@ -243,7 +243,7 @@ class GiftCertificateServiceImplTest {
                 .toModel(any(GiftCertificate.class));
         doReturn(tags.get(0))
                 .when(tagService)
-                .findTag(anyLong());
+                .findBy(anyLong());
         doReturn(relations)
                 .when(giftTagService)
                 .findByGift(anyLong());
